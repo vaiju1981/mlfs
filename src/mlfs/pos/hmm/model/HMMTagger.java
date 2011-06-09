@@ -67,7 +67,7 @@ public class HMMTagger {
 			phi[tag-1][t2-1][2] = startTag;
 		}
 		
-		for (int tag=1; tag<=numTag; tag++)//index 3
+		for (int tag=1; tag<=numTag&&senteceLen>4; tag++)//index 3，sentenceLen>4的要求是限制只有一个词作为一句话的情况
 		{
 			for (int preTag=1; preTag<=numTag; preTag++)
 			{
@@ -136,7 +136,8 @@ public class HMMTagger {
 		}
 		
 		reversePath.push(m_model.tagInt2Str(nicePreTag));
-		reversePath.push(m_model.tagInt2Str(nicePrePreTag));
+		if (senteceLen > 4)//考虑一句话只有一个词的情况
+			reversePath.push(m_model.tagInt2Str(nicePrePreTag));
 		int times = senteceLen-2;
 		while (times > 3)
 		{
