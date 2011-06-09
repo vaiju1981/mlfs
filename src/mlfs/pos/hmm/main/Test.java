@@ -43,6 +43,7 @@ public class Test {
 		IVWord ivword = model.getIVWord();
 		HMMTagger tagger = new HMMTagger(model);
 		
+		int sz = 0;
 		CorpusReader corpus = new CorpusReader(args[0]);
 		ArrayList<WordTag> sentence = null;
 		while ((sentence = corpus.getSequence()) != null)
@@ -58,6 +59,7 @@ public class Test {
 			ArrayList<String> res = tagger.viterbi(words);
 			for (int i=0; i<res.size(); i++)
 			{
+				System.out.println(res.get(i)+"\t" + ans.get(i+2));
 				if (res.get(i).equals(ans.get(i+2)))
 				{
 					if (ivword.isIVWord(words.get(i+2)))
@@ -73,6 +75,10 @@ public class Test {
 						oovF++;
 				}
 			}
+			System.out.println("Solve : " + (sz++));
+			System.out.println("ivT = " + ivT + " ivF = " + ivF + " percentage : " + 1.0*ivT/(ivT+ivF));
+			System.out.println("oovT = " + oovT + " oovF = " + oovF + " percentage : " + 1.0*oovT/(oovT+oovF));
+			System.out.println("T = " + (ivT+oovT) + " F = " + (ivF+oovF) + " percentage : " + 1.0*(ivT+oovT)/(ivT+ivF+oovT+oovF));
 		}
 		
 		System.out.println("ivT = " + ivT + " ivF = " + ivF + " percentage : " + 1.0*ivT/(ivT+ivF));
