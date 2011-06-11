@@ -14,8 +14,8 @@ package mlfs.pos.hmm.main;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import mlfs.pos.hmm.corpus.CorpusReader;
-import mlfs.pos.hmm.corpus.WordTag;
+import mlfs.pos.corpus.CorpusReader;
+import mlfs.pos.corpus.WordTag;
 import mlfs.pos.hmm.model.Model;
 
 /**

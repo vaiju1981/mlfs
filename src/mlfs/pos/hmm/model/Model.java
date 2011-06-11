@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import mlfs.pos.hmm.corpus.WordTag;
+import mlfs.pos.corpus.WordTag;
 import mlfs.pos.hmm.ngrams.BiGram;
 import mlfs.pos.hmm.ngrams.TriGram;
 import mlfs.pos.hmm.ngrams.UniGram;

@@ -54,97 +54,75 @@ public class HMMTagger {
 	{
 		int numTag = m_model.getNumTagger();
 		int senteceLen = sentence.size();
-		double[][][] theta = new double[numTag][numTag][senteceLen-1];//[当前tag][前一个tag][时间]
-		int phi[][][] = new int[numTag][numTag][senteceLen-1];//[当前tag][前一个tag][时间]
+		double[][] theta = new double[numTag][senteceLen-1];
+		int phi[][] = new int[numTag][senteceLen-1];
 		
-		int startTag = m_model.tagStr2Int("<Start>");
-		int t1 = startTag;//index 0
-		int t2 = startTag;// index 1
+		int t1 = m_model.tagStr2Int("<Start>");
+		int t2 = m_model.tagStr2Int("<Start>");
 		
-		for (int tag=1; tag<=numTag; tag++)//index 2
+		for (int tag=1; tag<=numTag; tag++)
 		{
-			theta[tag-1][t2-1][2] = getTriGramProb(new TriGram(t1, t2, tag)) + getEmissionProb(sentence.get(2), tag);
-			phi[tag-1][t2-1][2] = startTag;
+			theta[tag-1][2] = getTriGramProb(new TriGram(t1, t2, tag)) + getEmissionProb(sentence.get(2), tag);
+			phi[tag-1][0] = -1;
+			phi[tag-1][1] = m_model.tagStr2Int("<Start>");
+			phi[tag-1][2] = m_model.tagStr2Int("<Start>");
 		}
-		
-		for (int tag=1; tag<=numTag&&senteceLen>4; tag++)//index 3，sentenceLen>4的要求是限制只有一个词作为一句话的情况
-		{
-			for (int preTag=1; preTag<=numTag; preTag++)
-			{
-				theta[tag-1][preTag-1][3] = theta[preTag-1][t2-1][2] + getTriGramProb(new TriGram(t2, preTag, tag)) + getEmissionProb(sentence.get(3), tag);
-				phi[tag-1][preTag-1][3] = startTag;
-			}
-		}
-		
 		
 		//don't handle <End>
-		for (int w=4; w<senteceLen-1; w++)
+		for (int w=3; w<senteceLen-1; w++)
 		{
 			String word = sentence.get(w);
 			for (int tag=1; tag<=numTag; tag++)
 			{
+				double max = Double.NEGATIVE_INFINITY;
 				for (int preTag=1; preTag<=numTag; preTag++)
 				{
-					double max = Double.NEGATIVE_INFINITY;
-					for (int prePreTag=1; prePreTag<=numTag; prePreTag++)
-					{
-						double p = theta[preTag-1][prePreTag-1][w-1] + getTriGramProb(new TriGram(prePreTag, preTag, tag)) + getEmissionProb(word, tag);
-						if (p > max)
-							max = p;
-					}
-					theta[tag-1][preTag-1][w] = max;
+					int prePreTag = phi[preTag-1][w-1];
+		
+					double p = theta[preTag-1][w-1] + getTriGramProb(new TriGram(prePreTag, preTag, tag)) + getEmissionProb(word, tag);
+					if (p > max)
+						max = p;
 				}
+				theta[tag-1][w] = max;
 			}
 			
 			for (int tag=1; tag<=numTag; tag++)
 			{
+				double max = Double.NEGATIVE_INFINITY;
+				int nicePreTag = -1;
 				for (int preTag = 1; preTag <= numTag; preTag++)
 				{
-					double max = Double.NEGATIVE_INFINITY;
-					int nicePrePreTag = -1;
-					for (int prePreTag=1; prePreTag<=numTag; prePreTag++)
+					int prePreTag = phi[preTag-1][w-1];
+					double p = theta[preTag-1][w-1] + getTriGramProb(new TriGram(prePreTag, preTag, tag));
+					if (p > max)
 					{
-						double p = theta[preTag-1][prePreTag-1][w-1] + getTriGramProb(new TriGram(prePreTag, preTag, tag));
-						if (p > max)
-						{
-							max = p;
-							nicePrePreTag = prePreTag;
-						}
+						max = p;
+						nicePreTag = preTag;
 					}
-					phi[tag-1][preTag-1][w] = nicePrePreTag; 
 				}
+				phi[tag-1][w] = nicePreTag; 
 			}
 		}
 		
 		Stack<String> reversePath = new Stack<String>();
 		double max = Double.NEGATIVE_INFINITY;
 		int nicePreTag = -1;
-		int nicePrePreTag = -1;
-		int endTag = m_model.tagStr2Int("<End>");
 		for (int tag=1; tag<=numTag; tag++)
 		{
-			for (int pre=1; pre<=numTag; pre++)
+			double p = theta[tag-1][senteceLen-2]  + getBiGramProb(new BiGram(tag, m_model.tagStr2Int("<End>")));
+			if (p > max)
 			{
-				double p = theta[tag-1][pre-1][senteceLen-2]  + getBiGramProb(new BiGram(tag, endTag));
-				if (p > max)
-				{
-					max = p;
-					nicePreTag = tag;
-					nicePrePreTag = pre;
-				}
+				max = p;
+				nicePreTag = tag;
 			}
 		}
-		
 		reversePath.push(m_model.tagInt2Str(nicePreTag));
-		if (senteceLen > 4)//考虑一句话只有一个词的情况
-			reversePath.push(m_model.tagInt2Str(nicePrePreTag));
 		int times = senteceLen-2;
-		while (times > 3)
+		while (times > 2)
 		{
-			int preTag = phi[nicePreTag-1][nicePrePreTag-1][times];
-			nicePreTag = nicePrePreTag;
-			nicePrePreTag = preTag;
-			reversePath.push(m_model.tagInt2Str(preTag));
+			int preTag = phi[nicePreTag-1][times];
+			nicePreTag = preTag;
+			reversePath.push(m_model.tagInt2Str(nicePreTag));
 			times--;
 		}
 		
@@ -214,3 +192,4 @@ public class HMMTagger {
 		return p;
 	}
 }
+
