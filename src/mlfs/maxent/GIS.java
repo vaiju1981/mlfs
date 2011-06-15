@@ -48,8 +48,10 @@ public class GIS {
 	/** 似然值的收敛标准 CONVERGENCE. */
 	private static double CONVERGENCE = 0.0001;
 	
-	private static int NUM_NEWTON_ITER = 10;
+	/** 牛顿法迭代次数. */
+	private static int NUM_NEWTON_ITER = 50;
 	
+	/** 是否使用高斯平滑. */
 	private boolean USE_GAUSSIAN_SMOOTH = false;
 	
 	private TrainDataHandler m_trainData;
