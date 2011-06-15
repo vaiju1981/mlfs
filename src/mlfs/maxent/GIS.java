@@ -1,24 +1,24 @@
 /*
- * GIS.java
-   *  
- * Author: 罗磊，luoleicn@gmail.com
-   * 
+ * GIS.java 
+ * 
+ * Author : 罗磊，luoleicn@gmail.com
+ * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
-   * 
+ * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
-   * 
+ * 
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-   * 
- * Last Update:2011-6-12
-   * 
-   */
+ * 
+ * Last Update:Jun 15, 2011
+ * 
+ */
 package mlfs.maxent;
 
 import java.util.HashSet;
@@ -33,29 +33,57 @@ import mlfs.maxent.model.Event;
 import mlfs.maxent.model.GISModel;
 import mlfs.maxent.model.TrainDataHandler;
 
+/**
+ * The Class GIS.训练GISModel
+ */
 public class GIS {
 	
+	/** The logger. */
 	private static Logger logger = Logger.getLogger(GIS.class.getName());
 	
+	/** 对于未见过的特征的平滑. */
 	private static double SMOOTH_SEEN = 0.1;
+	
+	/** 似然值的收敛标准 CONVERGENCE. */
 	private static double CONVERGENCE = 0.0001;
 	
 	private TrainDataHandler m_trainData;
 	
+	/** labels的总数. */
 	private int m_numLabels;
+	
+	/** 谓词的总数. */
 	private int m_numPredicates;
+	
+	/** train data中的event列表. */
 	private List<Event> m_events;
 	
+	/** 观测期望，训练语料的最大似然估计期望. */
 	private double[][] m_observationExpection;
+	
+	/** 模型计算出的期望值. */
 	private double[][] m_modelExpection;
 	
+	/** 模型参数. */
 	private double[][] m_parameters;
+	
+	/** GIS计算的常数C. */
 	private int CONSTANT_C;
+	
+	/** GIS常数C的倒数. */
 	private double CONSTANT_C_INVERSE;
 
+	/** 谓词集合. */
 	private HashSet<Integer> m_predicates;
+	
+	/** label集合. */
 	private HashSet<Integer> m_labels;
 	
+	/**
+	 * Instantiates a new GIS.
+	 *
+	 * @param handler 训练语料得到的data handler
+	 */
 	public GIS(TrainDataHandler handler)
 	{
 		this.m_trainData = handler;
@@ -68,6 +96,12 @@ public class GIS {
 		this.m_labels = m_trainData.getLabels();
 	}
 	
+	/**
+	 * Train.
+	 *
+	 * @param numIter 迭代参数
+	 * @return GIS model
+	 */
 	public GISModel train(int numIter)
 	{
 		logger.info("Calc Constant C");
@@ -84,6 +118,11 @@ public class GIS {
 		return new GISModel(CONSTANT_C_INVERSE, m_parameters, m_numPredicates, m_numLabels, m_predicates, m_labels);
 	}
 	
+	/**
+	 * 计算GIS常数C
+	 *
+	 * @return the int
+	 */
 	private int calcContantC()
 	{
 		int c = -1;
@@ -109,6 +148,9 @@ public class GIS {
 	}
 	
 
+	/**
+	 * 计算观测期望
+	 */
 	private void calcObservationExpection()
 	{
 		int[][] predLabels = new int[m_numPredicates][m_numLabels];
@@ -134,6 +176,11 @@ public class GIS {
 		}
 	}
 	
+	/**
+	 * 迭代求解
+	 *
+	 * @param numIter 迭代次数
+	 */
 	private void iterate(int numIter)
 	{
 		m_parameters = new double[m_numPredicates][m_numLabels];
@@ -161,9 +208,17 @@ public class GIS {
 			
 			updateParameters();
 			logger.info("" + (i+1) + " loglikelihood : " + curloglikelihood);
+			if (i > 1 && curloglikelihood-preloglikelihood>CONVERGENCE)
+				break;
 		}
 	}
 	
+	/**
+	 * 计算给定一个event的上下文谓词集合，计算这个上下文产生各个label的条件概率
+	 *
+	 * @param event 给定的event 
+	 * @return the double[]条件概率
+	 */
 	private double[] calcCandProbs(Event event)
 	{
 		double[] candProbs = new double[m_numLabels];
@@ -196,6 +251,9 @@ public class GIS {
 		return candProbs;
 	}
 
+	/**
+	 * Update parameters.
+	 */
 	private void updateParameters()
 	{
 		for (int predicate=0; predicate<m_numPredicates; predicate++)

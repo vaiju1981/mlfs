@@ -29,7 +29,7 @@ import java.util.List;
 
 /**
  * The Class TrainData.
- * 封装利用CorpusReader处理后的内容
+ * 封装利用CorpusReader处理后的结果
  */
 public class TrainDataHandler {
 

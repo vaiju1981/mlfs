@@ -1,24 +1,24 @@
 /*
- * ComparableEvent.java
-   *  
- * Author: 罗磊，luoleicn@gmail.com
-   * 
+ * ComparableEvent.java 
+ * 
+ * Author : 罗磊，luoleicn@gmail.com
+ * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
-   * 
+ * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
-   * 
+ * 
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-   * 
- * Last Update:2011-6-11
-   * 
-   */
+ * 
+ * Last Update:Jun 15, 2011
+ * 
+ */
 package mlfs.maxent.model;
 
 import java.util.Arrays;
@@ -29,12 +29,20 @@ import java.util.Arrays;
  * 这个类是允许Sample属于多个类的event，
  * 只允许单类的情况请使用mlfs.maxent.model.Event
  * 
+ * 这个类允许event之间的排序
+ * 
  */
 public class ComparableEvent extends Event implements Comparable<ComparableEvent>{
 	
 	/** 这个event在训练语料中出现多少次，在分类问题中，一个event可能允许属于多个类. */
 	protected int m_seen = 1;
 
+	/**
+	 * Instantiates a new comparable event.
+	 *
+	 * @param label the label
+	 * @param predicates the predicates
+	 */
 	public ComparableEvent(int label, int[] predicates) {
 		
 		super(label, null);
@@ -43,6 +51,13 @@ public class ComparableEvent extends Event implements Comparable<ComparableEvent
 		
 	}
 	
+	/**
+	 * Instantiates a new comparable event.
+	 *
+	 * @param label the label
+	 * @param predicates the predicates
+	 * @param values the values
+	 */
 	public ComparableEvent(int label, int[] predicates, int[] values)
 	{
 		super(label, null, null);
@@ -52,17 +67,28 @@ public class ComparableEvent extends Event implements Comparable<ComparableEvent
 		m_values = values;
 	}
 
+	/* 当前event出现了多少次
+	 * @see mlfs.maxent.model.Event#getSeenTimes()
+	 */
 	@Override
 	public int getSeenTimes()
 	{
 		return m_seen;
 	}
 	
+	/**
+	 * 增加1次出现次数
+	 */
 	public void addSeen()
 	{
 		this.m_seen++;
 	}
 	
+	/**
+	 * 增加times次出现次数
+	 *
+	 * @param times the times
+	 */
 	public void addSeen(int times)
 	{
 		this.m_seen += times;
@@ -104,6 +130,9 @@ public class ComparableEvent extends Event implements Comparable<ComparableEvent
 		return 0;
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	@Override
 	public boolean equals(Object o)
 	{
@@ -133,6 +162,16 @@ public class ComparableEvent extends Event implements Comparable<ComparableEvent
 	}
 
 	
+	/**
+	 * Quick sort.对a进行快拍，b中的元素变化和a保持一致。
+	 * 
+	 * 形式上类似与a数组是key，b数组是value，按照key排序
+	 *
+	 * @param a the a
+	 * @param b the b
+	 * @param l the l
+	 * @param r the r
+	 */
 	private void quickSort(int[] a, int[] b, int l, int r)
 	{
 		int i=l, j=r;

@@ -1,23 +1,24 @@
 /*
- * CorpusReader.java
-   *  
- * Author: 罗磊，luoleicn@gmail.com
-   * 
+ * CorpusReader.java 
+ * 
+ * Author : 罗磊，luoleicn@gmail.com
+ * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
-   * 
+ * 
  * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
-   * 
+ * 
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-   * 
- * Last Update:2011-6-11
-   * 
-   */
+ * 
+ * Last Update:Jun 15, 2011
+ * 
+ */
 
 package mlfs.textClassification.corpus;
 
@@ -50,18 +51,35 @@ import mlfs.maxent.model.TrainDataHandler;
  */
 public class CorpusReader {
 	
+	/** The logger. */
 	private Logger logger = Logger.getLogger(CorpusReader.class.getName());
 	
+	/** The file path. */
 	private String m_filePath;
 	
+	/** The predicates collection. */
 	private HashSet<Integer> m_predicates;
+	
+	/** 通过阈值的谓词集合. */
 	private	HashSet<Integer> m_passedPreds = new HashSet<Integer>();
+	
+	/** 通过阈值的label集合. */
 	private	HashSet<Integer> m_passedLabels = new HashSet<Integer>();
 	
 	
+	/** 每篇文档里feature要至少出现多少次. */
 	private int m_cutoffPerDoc;
+	
+	/** 谓词至少要在多少个文档里出现. */
 	private int m_cutoffDocs;
 
+	/**
+	 * Instantiates a new corpus reader.
+	 *
+	 * @param file the file
+	 * @param cutoffPerDoc the cutoff per doc
+	 * @param cutoffDocs the cutoff docs
+	 */
 	public CorpusReader(String file, int cutoffPerDoc, int cutoffDocs)
 	{
 		this.m_filePath = file;
@@ -72,6 +90,16 @@ public class CorpusReader {
 	}
 	
 
+	/**
+	 * 在训练语料中进行统计.
+	 *
+	 *要求谓词满足的约束条件：
+	 *	1、一篇文章里出现次数要大于阈值1
+	 *	2、出现在的文章数大于阈值2
+	 *
+	 * @return the array list
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	private ArrayList<Event> statistics() throws IOException
 	{
 		logger.info("Analysising train data...");
@@ -157,6 +185,12 @@ public class CorpusReader {
 		return ret;
 	}
 	
+	/**
+	 * Gets the train data hadler.
+	 *
+	 * @return the train data hadler
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	public TrainDataHandler getTrainDataHadler() throws IOException
 	{
 		ArrayList<Event> events = statistics();
