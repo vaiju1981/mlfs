@@ -208,7 +208,7 @@ public class GIS {
 			
 			updateParameters();
 			logger.info("" + (i+1) + " loglikelihood : " + curloglikelihood);
-			if (i > 1 && curloglikelihood-preloglikelihood>CONVERGENCE)
+			if (i > 1 && curloglikelihood-preloglikelihood<CONVERGENCE)
 				break;
 		}
 	}

@@ -53,8 +53,8 @@ public class Test {
 				t++;
 			else
 				f++;
-			System.out.println(label + "->" + e.m_label + " Percentage : " + ((double)t/(t+f)));
 		}
+		System.out.println(" Percentage : " + ((double)t/(t+f)));
 		test.close();
 	}
 }
