@@ -32,6 +32,7 @@ import javax.swing.text.html.HTMLDocument.HTMLReader.ParagraphAction;
 import mlfs.maxent.model.Event;
 import mlfs.maxent.model.GISModel;
 import mlfs.maxent.model.TrainDataHandler;
+import mlfs.util.NewtonMethod;
 
 /**
  * The Class GIS.训练GISModel
@@ -46,6 +47,10 @@ public class GIS {
 	
 	/** 似然值的收敛标准 CONVERGENCE. */
 	private static double CONVERGENCE = 0.0001;
+	
+	private static int NUM_NEWTON_ITER = 10;
+	
+	private boolean USE_GAUSSIAN_SMOOTH = false;
 	
 	private TrainDataHandler m_trainData;
 	
@@ -94,6 +99,28 @@ public class GIS {
 		
 		this.m_predicates = m_trainData.getPredicates();
 		this.m_labels = m_trainData.getLabels();
+		
+		this.USE_GAUSSIAN_SMOOTH = false;
+	}
+	
+	/**
+	 * Instantiates a new gIS.
+	 *
+	 * @param handler the handler
+	 * @param useGaussianSmooth  是否使用高斯平滑
+	 */
+	public GIS(TrainDataHandler handler, boolean useGaussianSmooth)
+	{
+		this.m_trainData = handler;
+		
+		this.m_numPredicates = handler.getNumPredicates();
+		this.m_numLabels = handler.getNumLabels();
+		this.m_events = m_trainData.getEvents();
+		
+		this.m_predicates = m_trainData.getPredicates();
+		this.m_labels = m_trainData.getLabels();
+		
+		this.USE_GAUSSIAN_SMOOTH = useGaussianSmooth;
 	}
 	
 	/**
@@ -259,7 +286,26 @@ public class GIS {
 		for (int predicate=0; predicate<m_numPredicates; predicate++)
 			for (int label=0; label<m_numLabels; label++)
 			{
-				m_parameters[predicate][label] += CONSTANT_C_INVERSE * Math.log(m_observationExpection[predicate][label]/m_modelExpection[predicate][label]);
+				if (!USE_GAUSSIAN_SMOOTH)
+					m_parameters[predicate][label] += CONSTANT_C_INVERSE * Math.log(m_observationExpection[predicate][label]/m_modelExpection[predicate][label]);
+				else
+				{
+					double delta = 0.0;
+					double tmp = 0.0;
+					for (int i=0; i<NUM_NEWTON_ITER; i++)
+					{
+						tmp = delta;
+						double f = Math.exp(CONSTANT_C*delta)*m_modelExpection[predicate][label] + (m_parameters[predicate][label]+delta)/0.5 - m_observationExpection[predicate][label];
+						double f_derivative =  Math.exp(CONSTANT_C*delta)*m_modelExpection[predicate][label]*CONSTANT_C + 20;//20 = 1/0.5
+						delta += 0-f/f_derivative;
+						
+						if (i>0 && Math.abs(delta - tmp) < CONVERGENCE)
+							break;
+					}
+//					System.out.println("delta = "  + delta);
+					m_parameters[predicate][label] += delta;
+				}
+					
 			}
 	}
 }

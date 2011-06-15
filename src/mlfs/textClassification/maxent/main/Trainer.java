@@ -40,7 +40,7 @@ public class Trainer {
 	{
 		CorpusReader corpus = new CorpusReader("corpus/textClassification/train.txt", 1, 2);
 		TrainDataHandler handler = corpus.getTrainDataHadler();
-		GIS gis = new GIS(handler);
+		GIS gis = new GIS(handler, true);
 		GISModel model = gis.train(100);
 		
 		model.save("maxent.model");
