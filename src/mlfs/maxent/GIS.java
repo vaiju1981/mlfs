@@ -48,7 +48,7 @@ public class GIS {
 	private static double CONVERGENCE = 0.0001;
 	
 	/** 牛顿法迭代次数. */
-	private static int NUM_NEWTON_ITER = 50;
+	private static int NUM_NEWTON_ITER = 10;
 	
 	/** 是否使用高斯平滑. */
 	private boolean USE_GAUSSIAN_SMOOTH = false;
