@@ -32,7 +32,6 @@ import javax.swing.text.html.HTMLDocument.HTMLReader.ParagraphAction;
 import mlfs.maxent.model.Event;
 import mlfs.maxent.model.GISModel;
 import mlfs.maxent.model.TrainDataHandler;
-import mlfs.util.NewtonMethod;
 
 /**
  * The Class GIS.训练GISModel
@@ -107,7 +106,10 @@ public class GIS {
 	
 	/**
 	 * Instantiates a new gIS.
-	 *
+	 * 使用高斯平滑会导致参数的求解无法使用解析解更新
+	 * 只能使用牛顿法更新，进而导致训练速度减慢
+	 * 一般来说会提高模型效果，但具体能否提高效果也要看实际应用
+	 * 
 	 * @param handler the handler
 	 * @param useGaussianSmooth  是否使用高斯平滑
 	 */
