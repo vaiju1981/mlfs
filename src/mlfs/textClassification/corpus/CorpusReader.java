@@ -1,27 +1,43 @@
 /*
- * CorpusReader.java 
- * 
- * Author : 罗磊，luoleicn@gmail.com
- * 
- * This work is licensed under the Creative Commons Attribution 3.0 Unported License. 
- * To view a copy of this license, visit http://creativecommons.org/licenses/by/3.0/ 
- * 
- * Last Update:Jun 11, 2011
- * 
- */
+ * CorpusReader.java
+   *  
+ * Author: 罗磊，luoleicn@gmail.com
+   * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+   * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+   * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+   * 
+ * Last Update:2011-6-11
+   * 
+   */
+
 package mlfs.textClassification.corpus;
 
-import java.awt.Event;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.security.AllPermission;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.Iterator;
 import java.util.Map.Entry;
+import java.util.logging.Logger;
+
+import mlfs.maxent.model.ComparableEvent;
+import mlfs.maxent.model.Event;
+import mlfs.maxent.model.TrainDataHandler;
 
 /**
  * The Class CorpusReaders
@@ -34,15 +50,14 @@ import java.util.Map.Entry;
  */
 public class CorpusReader {
 	
+	private Logger logger = Logger.getLogger(CorpusReader.class.getName());
+	
 	private String m_filePath;
 	
-	/** 谓词->数字. */
-	private HashMap<String, Integer> m_dict;
+	private HashSet<Integer> m_predicates;
+	private	HashSet<Integer> m_passedPreds = new HashSet<Integer>();
+	private	HashSet<Integer> m_passedLabels = new HashSet<Integer>();
 	
-	private HashMap<String, Integer> m_label2idMap;
-	
-	private int m_numPredicates;
-	private int m_numLabels;
 	
 	private int m_cutoffPerDoc;
 	private int m_cutoffDocs;
@@ -53,93 +68,121 @@ public class CorpusReader {
 		this.m_cutoffPerDoc = cutoffPerDoc;
 		this.m_cutoffDocs = cutoffDocs;
 		
-		this.m_dict = new HashMap<String, Integer>();
-		this.m_label2idMap = new HashMap<String, Integer>();
-		this.m_numPredicates = 0;
-		this.m_numLabels = 0;
+		this.m_predicates = new HashSet<Integer>();
 	}
 	
-	public ArrayList<Event> getEvents() throws IOException
+
+	private ArrayList<Event> statistics() throws IOException
 	{
-		HashMap<Integer, Integer> predDocs = new HashMap<Integer, Integer>();
-		//create tmp file
-		File tmpFile = File.createTempFile("corpusReader", null);
-//		tmpFile.deleteOnExit();
-		PrintWriter tmpWriter = new PrintWriter(tmpFile);
-		
-		//第一遍，统计有那些谓词通过了
+		logger.info("Analysising train data...");
+		//第一遍，统计谓词出现在多少篇文档中
 		//约束条件：
 		//1、一篇文章里出现次数要大于阈值1
 		//2、出现在的文章数大于阈值2
 		BufferedReader reader = new BufferedReader(new FileReader(new File(m_filePath)));
 		String line = null;
+		HashMap<Integer, Integer> wordsNum = new HashMap<Integer, Integer>();
 		while ((line = reader.readLine()) != null)
 		{
-			HashMap<Integer, Integer> linePreCounter = new HashMap<Integer, Integer>();
+			String[] splits = line.split("\\s+");
 			
-			String[] words = line.split("\\s+");
-			
-			Integer label = m_label2idMap.get(words[0]);
-			if (label == null)
+			for (int i=1; i<splits.length; i++)
 			{
-				m_numLabels++;
-				label = m_numLabels;
-				m_label2idMap.put(words[0], label);
-			}
-			//skip label, start from index 1
-			for (int i=1; i<words.length; i++)
-			{
-				String word = words[i];
+				String[] wordcount = splits[i].split(":");
+				int word = Integer.parseInt(wordcount[0]);
+				m_predicates.add(word);
 				
-				Integer predicate = m_dict.get(word);
-				if (predicate == null)
-				{
-					m_numPredicates++;
-					predicate = m_numPredicates;
-					m_dict.put(word, predicate);
-				}
-				
-				if (linePreCounter.containsKey(predicate))
-					linePreCounter.put(predicate, linePreCounter.get(predicate)+1);
+				if (wordsNum.containsKey(word))
+					wordsNum.put(word, wordsNum.get(word)+1);
 				else
-					linePreCounter.put(predicate, 1);
+					wordsNum.put(word, 1);
 			}
-			
-			StringBuilder sb = new StringBuilder();
-			sb.append(label.intValue()).append("\t");
-			for (Entry<Integer, Integer> predSeen : linePreCounter.entrySet())
-			{
-				Integer predicate = predSeen.getKey();
-				Integer seen = predSeen.getValue();
-				
-				if (seen > m_cutoffPerDoc)
-				{
-					if (predDocs.containsKey(predicate))
-						predDocs.put(predicate, predDocs.get(predicate)+1);
-					else
-						predDocs.put(predicate, 1);
-					for (int i=0; i<seen; i++)
-						sb.append(predicate).append(" ");
-				}
-			}
-			tmpWriter.println(sb.toString());
 		}
 		reader.close();
-		tmpWriter.close();
-		
-		ArrayList<Event> events = new ArrayList<Event>();
-		reader = new BufferedReader(new FileReader(tmpFile));
+		//第二遍 按照约束条件过滤
+		reader = new BufferedReader(new FileReader(new File(m_filePath)));
+		ArrayList<ComparableEvent> events = new ArrayList<ComparableEvent>();
+		while ((line = reader.readLine()) != null)
+		{
+			String[] words = line.trim().split("\\s+");
+			
+			int label = Integer.parseInt(words[0]);
+			
+			ArrayList<Integer> predicates = new ArrayList<Integer>();
+			ArrayList<Integer> values = new ArrayList<Integer>();
+			for (int i=1; i<words.length; i++)
+			{
+				String[] wordCount = words[i].split(":");
+				int word = Integer.parseInt(wordCount[0]);
+				int count= Integer.parseInt(wordCount[1]);
+				
+				if (count>=m_cutoffPerDoc && wordsNum.get(word)>=m_cutoffDocs)
+				{
+					predicates.add(word);
+					values.add(count);
+				}
+			}
+			
+			if (predicates.size() == 0)
+				continue;
+			
+			int[] intPreds = new int[predicates.size()];
+			int[] intVals = new int[values.size()];
+			for (int i=0; i<intPreds.length; i++)
+			{
+				intPreds[i] = predicates.get(i);
+				intVals[i] = values.get(i);
+				
+				m_passedPreds.add(predicates.get(i));
+			}
+			m_passedLabels.add(label);
+			events.add(new ComparableEvent(label, intPreds, intVals));
+		}
 		reader.close();
-//		tmpFile.delete();
+		Collections.sort(events);
+		ArrayList<Event> ret = new ArrayList<Event>(events.size());
+		ComparableEvent addEvent = null;
+		for (int i=0; i<events.size(); i++)
+		{
+			ComparableEvent event = events.get(i);
+			if (event.equals(addEvent))
+				addEvent.addSeen();
+			else
+			{
+				ret.add(event);
+				addEvent = event;
+			}
+		}
 		
-		return events;
+		return ret;
 	}
 	
-	private static void checkAndPlus1(Map<String, Integer> map, String w )
+	public TrainDataHandler getTrainDataHadler() throws IOException
 	{
-		if (map.containsKey(w))
-			map.put(w, map.get(w)+1);
-		else
-			map.put(w, 1);
+		ArrayList<Event> events = statistics();
+		
+		int numPred = 0;
+		Iterator<Integer> iter = m_predicates.iterator();
+		while (iter.hasNext())
+		{
+			int n = iter.next();
+			if (n > numPred)
+				numPred = n;
+		}
+		numPred++;
+		
+		int numLabels = 0;
+		iter = m_passedLabels.iterator();
+		while (iter.hasNext())
+		{
+			int n = iter.next();
+			if (n > numLabels)
+				numLabels = n;
+		}
+		numLabels++;
+		
+		return new TrainDataHandler(m_passedPreds, m_passedLabels, events, numPred, numLabels);
 	}
+
+	
 }
