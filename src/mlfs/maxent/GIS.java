@@ -215,13 +215,15 @@ public class GIS {
 	private void iterate(int numIter)
 	{
 		m_parameters = new double[m_numPredicates][m_numLabels];
+		m_modelExpection = new double[m_numPredicates][m_numLabels];
+		
 		double preloglikelihood = 0.0;
 		double curloglikelihood = Double.MAX_VALUE;
 		for (int i=0; i<numIter; i++)
 		{
 			preloglikelihood = curloglikelihood;
 			curloglikelihood = 0.0;
-			m_modelExpection = new double[m_numPredicates][m_numLabels];
+			clearModelException();
 			for (Event event : m_events)
 			{
 				double[] candProbs = calcCandProbs(event);
@@ -311,5 +313,12 @@ public class GIS {
 				}
 					
 			}
+	}
+	
+	private void clearModelException()
+	{
+			for (int i=0; i<m_numPredicates; i++)
+				for (int j=0; j<m_numLabels; j++)
+					m_modelExpection[i][j] = 0.0;
 	}
 }
