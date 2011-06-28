@@ -1,17 +1,14 @@
 package mlfs.chineseSeg.main;
 
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import mlfs.chineseSeg.corpus.CorpusProcessing;
 import mlfs.crf.CRFTrainer;
 import mlfs.crf.Features;
 import mlfs.crf.TemplateHandler;
 import mlfs.crf.corpus.CorpusReader;
 import mlfs.crf.model.CRFEvent;
-import mlfs.crf.model.RowColumn;
 
 public class Train {
 

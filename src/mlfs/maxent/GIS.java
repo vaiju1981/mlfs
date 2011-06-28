@@ -21,28 +21,17 @@
  */
 package mlfs.maxent;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.zip.CRC32;
-
-import javax.swing.text.html.HTMLDocument.HTMLReader.ParagraphAction;
-
 import mlfs.maxent.model.Event;
-import mlfs.maxent.model.GISModel;
+import mlfs.maxent.model.MEModel;
 import mlfs.maxent.model.TrainDataHandler;
 
 /**
  * The Class GIS.训练GISModel
  */
-public class GIS {
+public class GIS extends TrainModel{
 	
-	/** The logger. */
-	private static Logger logger = Logger.getLogger(GIS.class.getName());
-	
-	/** 对于未见过的特征的平滑. */
-	private static double SMOOTH_SEEN = 0.1;
+	private Logger logger = Logger.getLogger(GIS.class.getName());
 	
 	/** 似然值的收敛标准 CONVERGENCE. */
 	private static double CONVERGENCE = 0.0001;
@@ -50,41 +39,12 @@ public class GIS {
 	/** 牛顿法迭代次数. */
 	private static int NUM_NEWTON_ITER = 10;
 	
-	/** 是否使用高斯平滑. */
-	private boolean USE_GAUSSIAN_SMOOTH = false;
-	
-	private TrainDataHandler m_trainData;
-	
-	/** labels的总数. */
-	private int m_numLabels;
-	
-	/** 谓词的总数. */
-	private int m_numPredicates;
-	
-	/** train data中的event列表. */
-	private List<Event> m_events;
-	
-	/** 观测期望，训练语料的最大似然估计期望. */
-	private double[][] m_observationExpection;
-	
-	/** 模型计算出的期望值. */
-	private double[][] m_modelExpection;
-	
-	/** 模型参数. */
-	private double[][] m_parameters;
-	
 	/** GIS计算的常数C. */
 	private int CONSTANT_C;
 	
 	/** GIS常数C的倒数. */
 	private double CONSTANT_C_INVERSE;
 
-	/** 谓词集合. */
-	private HashSet<Integer> m_predicates;
-	
-	/** label集合. */
-	private HashSet<Integer> m_labels;
-	
 	/**
 	 * Instantiates a new GIS.
 	 *
@@ -92,18 +52,8 @@ public class GIS {
 	 */
 	public GIS(TrainDataHandler handler)
 	{
-		this.m_trainData = handler;
-		
-		this.m_numPredicates = handler.getNumPredicates();
-		this.m_numLabels = handler.getNumLabels();
-		this.m_events = m_trainData.getEvents();
-		
-		this.m_predicates = m_trainData.getPredicates();
-		this.m_labels = m_trainData.getLabels();
-		
-		this.USE_GAUSSIAN_SMOOTH = false;
+		super(handler);
 	}
-	
 	/**
 	 * Instantiates a new gIS.
 	 * 使用高斯平滑会导致参数的求解无法使用解析解更新
@@ -115,25 +65,20 @@ public class GIS {
 	 */
 	public GIS(TrainDataHandler handler, boolean useGaussianSmooth)
 	{
-		this.m_trainData = handler;
-		
-		this.m_numPredicates = handler.getNumPredicates();
-		this.m_numLabels = handler.getNumLabels();
-		this.m_events = m_trainData.getEvents();
-		
-		this.m_predicates = m_trainData.getPredicates();
-		this.m_labels = m_trainData.getLabels();
-		
-		this.USE_GAUSSIAN_SMOOTH = useGaussianSmooth;
+		super(handler, useGaussianSmooth);
 	}
 	
+	@Override
+	public MEModel train() {
+		return train(100);
+	}
 	/**
 	 * Train.
 	 *
 	 * @param numIter 迭代参数
 	 * @return GIS model
 	 */
-	public GISModel train(int numIter)
+	public MEModel train(int numIter)
 	{
 		logger.info("Calc Constant C");
 		CONSTANT_C = calcContantC();
@@ -146,7 +91,7 @@ public class GIS {
 		logger.info("Start to iterate " + numIter + " times");
 		iterate(numIter);
 		
-		return new GISModel(CONSTANT_C_INVERSE, m_parameters, m_numPredicates, m_numLabels, m_predicates, m_labels);
+		return new MEModel(m_parameters, m_numLabels, m_predicates, m_labels);
 	}
 	
 	/**
@@ -180,34 +125,6 @@ public class GIS {
 	
 
 	/**
-	 * 计算观测期望
-	 */
-	private void calcObservationExpection()
-	{
-		int[][] predLabels = new int[m_numPredicates][m_numLabels];
-		
-		for (Event event : m_events)
-		{
-			for (int pid=0; pid<event.m_predicates.length; pid++)
-			{
-				int predicate = event.m_predicates[pid];
-				predLabels[predicate][event.m_label] += event.getSeenTimes() * event.m_values[pid];
-			}
-		}
-		
-		for (int i=0; i<m_numPredicates; i++)
-		{
-			for (int j=0; j<m_numLabels; j++)
-			{
-				if (predLabels[i][j] > 0)
-					m_observationExpection[i][j] = predLabels[i][j];
-				else
-					m_observationExpection[i][j] = SMOOTH_SEEN;
-			}
-		}
-	}
-	
-	/**
 	 * 迭代求解
 	 *
 	 * @param numIter 迭代次数
@@ -235,7 +152,6 @@ public class GIS {
 						m_modelExpection[predicate][label] += event.getSeenTimes()*candProbs[label]*event.m_values[pid];
 					}
 				}
-//				System.out.println(event.getSeenTimes() +" " + Math.log(candProbs[event.m_label]));
 				curloglikelihood += event.getSeenTimes()*Math.log(candProbs[event.m_label]);
 			}
 			

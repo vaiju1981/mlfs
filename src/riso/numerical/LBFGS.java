@@ -80,6 +80,7 @@ public class LBFGS
 	{
 		public int iflag;
 		public ExceptionWithIflag( int i, String s ) { super(s); iflag = i; }
+		@Override
 		public String toString() { return getMessage()+" (iflag == "+iflag+")"; }
 	}
 
@@ -334,7 +335,8 @@ public class LBFGS
 
 			gnorm = Math.sqrt ( ddot ( n , g , 0, 1 , g , 0, 1 ) );
 			stp1= 1/gnorm;
-			ftol= 0.0001; 
+//			ftol= 0.0001; 
+			ftol= 0.1; 
 			maxfev= 20;
 
 			if ( iprint [ 1 -1] >= 0 ) lb1 ( iprint , iter , nfun , gnorm , n , m , x , f , g , stp , finish );

@@ -3,16 +3,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-import riso.numerical.LBFGS;
-
-import mlfs.maxent.GIS;
-import mlfs.maxent.model.ComparableEvent;
-import mlfs.maxent.model.Event;
-import mlfs.maxent.model.GISModel;
-import mlfs.maxent.model.TrainDataHandler;
 import mlfs.numerical.AbstractLBFGS;
-import mlfs.textClassification.corpus.CorpusReader;
-import mlfs.textClassification.corpus.TestCorpusReader;
 
 
 public class ttt {

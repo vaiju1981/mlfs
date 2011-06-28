@@ -22,14 +22,11 @@
 package mlfs.crf;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import mlfs.crf.corpus.CorpusReader;
 import mlfs.crf.model.CRFEvent;
-import mlfs.crf.model.CRFModel;
 import mlfs.numerical.AbstractLBFGS;
 
 public class CRFTrainer {
@@ -78,7 +75,6 @@ public class CRFTrainer {
 	
 	/**
 	 * Calc observation expectation.
-	 * 这里需要对未出现特征进行平滑！！！
 	 */
 	private void calcObservationExpectation()
 	{

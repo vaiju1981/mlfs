@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import mlfs.crf.model.CRFEvent;
-import mlfs.crf.model.RowColumn;
 
 public class CorpusReader {
 	

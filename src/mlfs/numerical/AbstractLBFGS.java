@@ -32,10 +32,12 @@ import riso.numerical.LBFGS;
 public abstract class AbstractLBFGS {
 
 	/** 维度. */
-	private int m_dimension;
+	protected int m_dimension;
 	
 	/** 用于逼近的向量个数. */
 	private int m_m;
+	
+	private int m_numIter = 200;
 	
 	/**
 	 * Instantiates a new abstract lbfgs.
@@ -48,16 +50,18 @@ public abstract class AbstractLBFGS {
 		this.m_m = 5;
 	}
 	
+	
 	/**
 	 * Instantiates a new abstract lbfgs.
 	 *
 	 * @param dimetion the dimetion
 	 * @param m the m
 	 */
-	public AbstractLBFGS(int dimetion, int m)
+	public AbstractLBFGS(int dimetion, int m, int numIter)
 	{
 		this.m_dimension = dimetion;
 		this.m_m = m;
+		this.m_numIter = numIter;
 	}
 	
 	/**
@@ -116,7 +120,7 @@ public abstract class AbstractLBFGS {
 			icall += 1;
 			after();
 		}
-		while ( iflag[0] != 0 && icall <= 200 );
+		while ( iflag[0] != 0 && icall <= m_numIter );
 		return f;
 	}
 	

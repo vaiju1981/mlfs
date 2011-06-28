@@ -23,7 +23,6 @@ package mlfs.chineseSeg.corpus;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -38,7 +37,6 @@ import java.util.logging.Logger;
 import mlfs.chineseSeg.crf.model.CHARACTER_FEATURE;
 import mlfs.chineseSeg.crf.model.Resource;
 import mlfs.chineseSeg.crf.model.TAGS;
-import mlfs.crf.model.DataFormat;
 import mlfs.util.FixedHeap;
 
 /**

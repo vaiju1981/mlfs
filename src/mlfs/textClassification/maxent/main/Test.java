@@ -24,7 +24,7 @@ package mlfs.textClassification.maxent.main;
 import java.io.IOException;
 
 import mlfs.maxent.model.Event;
-import mlfs.maxent.model.GISModel;
+import mlfs.maxent.model.MEModel;
 import mlfs.textClassification.corpus.TestCorpusReader;
 
 /**
@@ -41,7 +41,7 @@ public class Test {
 	 */
 	public static void main(String[] args) throws IOException, ClassNotFoundException
 	{
-		GISModel newModel = GISModel.load("maxent.model");
+		MEModel newModel = MEModel.load("maxent.model");
 		
 		int t=0, f=0;
 		TestCorpusReader test = new TestCorpusReader("corpus/textClassification/train.txt", newModel.getPreds());
