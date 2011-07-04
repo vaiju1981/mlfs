@@ -28,6 +28,8 @@ import riso.numerical.LBFGS;
  * 
  * 包装L-BFGS的细节，调用者只须指定给定x如何计算优化函数的值以及导数即可
  * 注意：L-BFGS用于求解优化函数的最小值！使用这个类前，确定自己要做的是最小化目标函数
+ * 
+ * 注意：AbstractLBFGS保证在getsolution方法中每次迭代先调用calFunctionVal(x)方法，后调用calGradientVal(x, g)
  */
 public abstract class AbstractLBFGS {
 
@@ -95,12 +97,11 @@ public abstract class AbstractLBFGS {
 		
 		//init x[]
 		for (int i=0; i<n; i++)
-			x[i] = 0.001;
+			x[i] = 0.000;
 		
 		double f = 0.0;
 		do
 		{
-			before();
 			//calc function f given vector x
 			f = calFunctionVal(x);
 			
@@ -118,7 +119,6 @@ public abstract class AbstractLBFGS {
 			}
 
 			icall += 1;
-			after();
 		}
 		while ( iflag[0] != 0 && icall <= m_numIter );
 		return f;
@@ -140,21 +140,4 @@ public abstract class AbstractLBFGS {
 	 */
 	public abstract void  calGradientVal(double[] x, double[] g) ;
 	
-	/**
-	 * Before.
-	 * 每次迭代前可以用这个方法做一些准备工作
-	 */
-	protected void before()
-	{
-		
-	}
-	
-	/**
-	 * After.
-	 * 每次迭代后，下一次迭代前，会调用这个函数
-	 */
-	protected void after()
-	{
-		
-	}
 }

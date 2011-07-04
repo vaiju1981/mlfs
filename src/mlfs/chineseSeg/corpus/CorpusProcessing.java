@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
- * Last Update:Jun 24, 2011
+ * Last Update:Jul 3, 2011
  * 
  */
 package mlfs.chineseSeg.corpus;
@@ -36,7 +36,6 @@ import java.util.logging.Logger;
 
 import mlfs.chineseSeg.crf.model.CHARACTER_FEATURE;
 import mlfs.chineseSeg.crf.model.Resource;
-import mlfs.chineseSeg.crf.model.TAGS;
 import mlfs.util.FixedHeap;
 
 /**
@@ -74,38 +73,54 @@ import mlfs.util.FixedHeap;
  * “行”、“举行”、“京举行”、“北京举行”共4个。在词典中查找以上所有子串，包含在词典中长度最长的
  * 子串是“举行”，所以在该句子中“行”字的end信息为2。
  * 
- * Tag:
- * 0	B
- * 1	M
- * 2	E
- * 3	S
- * 
+ * TAG:
+ * B(0), M(1), E(2), S(3);
  */
 public class CorpusProcessing {
 	
+	/** The logger. */
 	private static Logger logger = Logger.getLogger(CorpusProcessing.class.getName());
 
+	/** 如果出现为某个tag的频率超过这个阈值，则把对应的feature（feature 2、3、4）置一. */
 	private static double FREQ_THESHOLE = 0.95;
+	
+	/** 选取feature1属于长词的个数. */
 	private static int NUM_LONGWORD = 35;
 	
+	/** 生成的train文件的文件名. */
 	private static String CHINESE_SEGMENT_CRF_TRAIN = "CHINESE_SEGMENT_CRF.train";
 	
+	/** train文件的语料地址. */
 	private String m_path;
 	
+	/** 资源. */
 	private Resource m_resource;
 	
 	private Map<Character, Integer> m_begCounter;
+	
 	private Map<Character, Integer> m_midCounter;
+	
 	private Map<Character, Integer> m_endCounter;
+	
 	private Map<Character, Integer> m_singleCounter;
 	
 	private Map<Character, Integer> m_begLongest;
+	
 	private Map<Character, Integer> m_middleLongest;
+	
 	private Map<Character, Integer> m_endLongest;
 	
+	/** 统计字符出现的次数. */
 	private Map<Character, Integer> m_longword;
+	
+	/** 具有长词特征的字符集合. */
 	private Set<Character> m_longwordLetters;
 	
+	/**
+	 * Instantiates a new corpus processing.
+	 *
+	 * @param path 训练语料路径
+	 */
 	public CorpusProcessing(String path)
 	{
 		this.m_path = path;
@@ -231,7 +246,7 @@ public class CorpusProcessing {
 	 *
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public void work() throws IOException
+	public void buildTrainFile() throws IOException
 	{
 		logger.info("first pass ...");
 		firstPass();
@@ -278,15 +293,15 @@ public class CorpusProcessing {
 				{
 					char key = charSeq[i];
 					int[] features = new int[4];
-					int tag;
+					char tag;
 					if (charSeq.length == 1)
-						tag = TAGS.S.getValue();
+						tag = 'S';
 					else if (i == 0)
-						tag = TAGS.B.getValue();
+						tag = 'B';
 					else if (i == charSeq.length-1)
-						tag = TAGS.E.getValue();
+						tag = 'E';
 					else
-						tag = TAGS.M.getValue();
+						tag = 'M';
 					
 					//freq information
 					int freq = 0;
@@ -353,6 +368,11 @@ public class CorpusProcessing {
 		writer.close();
 	}
 
+	/**
+	 * Gets the new train file.
+	 *
+	 * @return the new train file
+	 */
 	public File getNewTrainFile()
 	{
 		return new File(CHINESE_SEGMENT_CRF_TRAIN);

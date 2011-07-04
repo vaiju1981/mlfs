@@ -23,6 +23,7 @@ package mlfs.textClassification.maxent.main;
 
 import java.io.IOException;
 
+import mlfs.maxent.GIS;
 import mlfs.maxent.MELBFGS;
 import mlfs.maxent.model.MEModel;
 import mlfs.maxent.model.TrainDataHandler;
@@ -45,11 +46,11 @@ public class Trainer {
 		//一般来说会提高模型效果，但具体能否提高效果也要看实际应用
 		
 		//使用GIS求参
-//		GIS gis = new GIS(handler, false);
-//		MEModel model = gis.train(100);
+		GIS gis = new GIS(handler, true);
+		MEModel model = gis.train(100);
 		
-		MELBFGS lbfgs = new MELBFGS(handler);
-		MEModel model = lbfgs.train();
+//		MELBFGS lbfgs = new MELBFGS(handler);
+//		MEModel model = lbfgs.train();
 		
 		model.save("maxent.model");
 	}

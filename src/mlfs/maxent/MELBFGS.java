@@ -105,12 +105,6 @@ public class MELBFGS extends TrainModel{
 						
 		}
 		
-		@Override
-		protected void before()
-		{
-			
-		}
-		
 		private double[] calcCandProbs(Event event, double[] solutions)
 		{
 			double[] candProbs = new double[m_numLabels];

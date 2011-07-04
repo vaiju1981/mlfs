@@ -17,16 +17,18 @@ public class ttt {
 //		System.out.println(x[1]);
 //		System.out.println(f);
 		
-		BufferedReader reader = new BufferedReader(new FileReader(new File("CHINESE_SEGMENT_CRF.train")));
-		String line = null;
-		int i=0;
-		while ((line = reader.readLine()) != null)
-		{
-			i++;
-			line.split("\\s");
-			System.out.println(i);
-		}
-		reader.close();
+//		BufferedReader reader = new BufferedReader(new FileReader(new File("CHINESE_SEGMENT_CRF.train")));
+//		String line = null;
+//		int i=0;
+//		while ((line = reader.readLine()) != null)
+//		{
+//			i++;
+//			line.split("\\s");
+//			System.out.println(i);
+//		}
+//		reader.close();
+		double d = 0.0/0.0;
+		System.out.println(d);
 	}
 }
 

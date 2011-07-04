@@ -1,5 +1,5 @@
 /*
- * TemplateReader.java 
+ * TemplateHandler.java 
  * 
  * Author : 罗磊，luoleicn@gmail.com
  * 
@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
- * Last Update:Jun 24, 2011
+ * Last Update:Jul 4, 2011
  * 
  */
 package mlfs.crf;
@@ -35,24 +35,31 @@ import mlfs.crf.model.CRFEvent;
 import mlfs.crf.model.RowColumn;
 
 /**
- * The Class TemplateReader.
+ * 处理用户手工编写的特征模板.
  */
 public class TemplateHandler {
 	
-	private Logger logger = Logger.getLogger(TemplateHandler.class.getName());
+	/** 在每个序列前加入一个START标签. */
 	private static String START = "START";
+	
+	/** 在每个序列后加入一个START标签. */
 	private static String END = "END";
+	
+	/** 特征模板文件按的路径. */
 	private String m_path;
 	
+	/** unigram特征模板. */
 	private List<List<RowColumn>> m_unigramPredList;
+	
+	/** bigram特征模板. */
 	private List<List<RowColumn>> m_bigramPredList;
 	
-	
+	public static char PREDICATE_JOIN = '_';
 	/**
 	 * Instantiates a new template reader.
 	 *
 	 * @param path the path
-	 * @throws IOException 
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public TemplateHandler(String path) throws IOException
 	{
@@ -60,12 +67,11 @@ public class TemplateHandler {
 		this.m_unigramPredList = new ArrayList<List<RowColumn>>();
 		this.m_bigramPredList = new ArrayList<List<RowColumn>>();
 		
-		logger.info("Reading all templates...");
 		read();
 	}
 	
 	/**
-	 * Read.
+	 * 读取特征文件.
 	 *
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
@@ -80,7 +86,7 @@ public class TemplateHandler {
 				continue;
 			if (line.charAt(0) == '#')//comment
 				continue;
-			if (predSet.contains(line))//duplicate pred
+			if (predSet.contains(line))//duplicate template
 				continue;
 			
 			predSet.add(line);
@@ -123,6 +129,14 @@ public class TemplateHandler {
 		reader.close();
 	}
 	
+	/**
+	 * 根据给定的谓词模板，event以及event的中的坐标抽取谓词
+	 *
+	 * @param event the event
+	 * @param idx the idx
+	 * @param predList 谓词模板
+	 * @return the list
+	 */
 	private List<String> predExtraction(CRFEvent event, int idx,  List<List<RowColumn>> predList)
 	{
 		List<String> predicates = new ArrayList<String>();
@@ -130,38 +144,59 @@ public class TemplateHandler {
 		for (List<RowColumn> onePredTemplate : predList)// for each feature template
 		{
 			StringBuilder sb = new StringBuilder();
-			sb.append("");
 			for (RowColumn rc : onePredTemplate)
 			{
 				int row = idx + rc.row;
 				int col = rc.col;
 				
-				if (col == event.charFeat[0].length-1)
+				if (col == event.charFeat.get(0).size()-1)
 					throw new IllegalStateException("You should never use the last column of train_file you have generated.");
-				if (col > event.charFeat[0].length-1)
+				if (col > event.charFeat.get(0).size()-1)
 					throw new ArrayIndexOutOfBoundsException("col = " + col);
 				
 				if (row <0)
-					sb.append(START).append('_');
-				else if (row > event.charFeat.length-1)
-					sb.append(END).append('_');
+					sb.append(START).append(PREDICATE_JOIN);
+				else if (row > event.charFeat.size()-1)
+					sb.append(END).append(PREDICATE_JOIN);
 				else
-					sb.append(event.charFeat[row][col]).append('_');
+					sb.append(event.charFeat.get(row).get(col)).append(PREDICATE_JOIN);
 			}
 			predicates.add(sb.toString());
 		}
 		return predicates;
 	}
 	
+	/**
+	 * Gets the unigram predicates.
+	 *
+	 * @param event the event
+	 * @param idx the idx
+	 * @return the unigram pred
+	 */
 	public List<String> getUnigramPred(CRFEvent event, int idx)
 	{
 		return predExtraction(event, idx, m_unigramPredList);
 	}
 	
+	/**
+	 * Gets the bigram predicates.
+	 *
+	 * @param event the event
+	 * @param idx the idx
+	 * @return the bigram pred
+	 */
 	public List<String> getBigramPred(CRFEvent event, int idx)
 	{
 		return predExtraction(event, idx, m_bigramPredList);
 	}
 	
-	
+	/**
+	 * Gets the path.
+	 *
+	 * @return the path
+	 */
+	public String getPath()
+	{
+		return m_path;
+	}
 }

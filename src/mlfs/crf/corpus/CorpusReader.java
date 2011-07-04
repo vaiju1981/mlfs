@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
- * Last Update:Jun 24, 2011
+ * Last Update:Jul 3, 2011
  * 
  */
 package mlfs.crf.corpus;
@@ -33,15 +33,28 @@ import java.util.logging.Logger;
 
 import mlfs.crf.model.CRFEvent;
 
+/**
+ * The Class CorpusReader.
+ */
 public class CorpusReader {
 	
+	/** The logger. */
 	private Logger logger = Logger.getLogger(CorpusReader.class.getName());
 	
+	/** 路径. */
 	private String m_path;
 	
+	/** tag和数字对应. */
 	private Map<String, Integer> m_tagIdMap;
+	
+	/** tag总数. */
 	private int m_tagCounter;
 	
+	/**
+	 * Instantiates a new corpus reader.
+	 *
+	 * @param path the path
+	 */
 	public CorpusReader(String path)
 	{
 		m_path = path;
@@ -89,7 +102,7 @@ public class CorpusReader {
 						m_tagCounter++;
 					}
 					event.labels[i] = label;
-					event.addCharFeat(i, sentence.get(i).split("\\s+"));
+					event.addCharFeat(sentence.get(i).split("\\s+"));
 				}
 				events.add(event);
 				sentence.clear();
@@ -99,10 +112,37 @@ public class CorpusReader {
 				sentence.add(line);
 			}
 		}
+		
+		//last sentence
+		int sz = sentence.size();
+		if (sz != 0)
+		{
+			String[] inputs = new String[sz];
+			int[] labels = new int[sz];
+			CRFEvent event = new CRFEvent(inputs, labels);
+			for (int i = 0; i < sz; i++) {
+				String[] vec = sentence.get(i).split("\\s+");
+				event.inputs[i] = vec[0];
+				Integer label = m_tagIdMap.get(vec[vec.length - 1]);
+				if (label == null) {
+					label = m_tagCounter;
+					m_tagIdMap.put(vec[vec.length - 1], label);
+					m_tagCounter++;
+				}
+				event.labels[i] = label;
+				event.addCharFeat(sentence.get(i).split("\\s+"));
+			}
+			events.add(event);
+		}
 		reader.close();
 		return events;
 	}
 	
+	/**
+	 * Gets the tag map.
+	 *
+	 * @return the tag map
+	 */
 	public Map<String, Integer> getTagMap()
 	{
 		return m_tagIdMap;

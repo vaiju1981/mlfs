@@ -1,25 +1,62 @@
+/*
+ * Resource.java 
+ * 
+ * Author : 罗磊，luoleicn@gmail.com
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * Last Update:Jul 3, 2011
+ * 
+ */
 package mlfs.chineseSeg.crf.model;
 
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * The Class Resource.
+ */
 public class Resource {
 
+	/** 数字*/
 	private Set<Character> m_digit;
 	
+	/** 中文数字. */
 	private Set<Character> m_digitChinese;
 	
+	/** 字符. */
 	private Set<Character> m_letters;
 	
+	/** 标点. */
 	private Set<Character> m_punctuation;
 	
+	/** The m_resource. */
 	private static Resource m_resource;
 	
+	/**
+	 * Instantiates a new resource.
+	 */
 	private Resource()
 	{
 		init();
 	}
 	
+	/**
+	 * Gets the single instance of Resource.
+	 *
+	 * @return single instance of Resource
+	 */
 	public static Resource getInstance()
 	{
 		if (m_resource == null)
@@ -27,26 +64,53 @@ public class Resource {
 		return m_resource;
 	}
 	
+	/**
+	 * Checks if is digit.
+	 *
+	 * @param c the c
+	 * @return true, if is digit
+	 */
 	public boolean isDigit(char c)
 	{
 		return m_digit.contains(c);
 	}
 
+	/**
+	 * Checks if is chinese digit.
+	 *
+	 * @param c the c
+	 * @return true, if is chinese digit
+	 */
 	public boolean isChineseDigit(char c)
 	{
 		return m_digitChinese.contains(c);
 	}
 	
+	/**
+	 * Checks if is letter.
+	 *
+	 * @param c the c
+	 * @return true, if is letter
+	 */
 	public boolean isLetter(char c)
 	{
 		return m_letters.contains(c);
 	}
 	
+	/**
+	 * Checks if is punctuation.
+	 *
+	 * @param c the c
+	 * @return true, if is punctuation
+	 */
 	public boolean isPunctuation(char c)
 	{
 		return m_punctuation.contains(c);
 	}
 	
+	/**
+	 * Inits the.
+	 */
 	private void init()
 	{
 		m_digit = new HashSet<Character>();

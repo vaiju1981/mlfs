@@ -1,3 +1,24 @@
+/*
+ * MEModel.java 
+ * 
+ * Author : 罗磊，luoleicn@gmail.com
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * Last Update:Jun 28, 2011
+ * 
+ */
 package mlfs.maxent.model;
 
 import java.io.File;
@@ -11,6 +32,9 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * The Class MEModel.
+ */
 public class MEModel implements Serializable{
 	
 	/** The Constant serialVersionUID. */
@@ -28,6 +52,14 @@ public class MEModel implements Serializable{
 	/** The m_labels. */
 	protected HashSet<Integer> m_labels;
 	
+	/**
+	 * Instantiates a new mE model.
+	 *
+	 * @param parameters the parameters
+	 * @param numLabels the num labels
+	 * @param predicates the predicates
+	 * @param labels the labels
+	 */
 	public MEModel(double[][] parameters, int numLabels, HashSet<Integer> predicates, HashSet<Integer> labels)
 	{
 		m_parameters = parameters;
@@ -106,6 +138,11 @@ public class MEModel implements Serializable{
 		return model;
 	}
 	
+	/**
+	 * Gets the preds.
+	 *
+	 * @return the preds
+	 */
 	public Set<Integer> getPreds()
 	{
 		return this.m_predicates;
