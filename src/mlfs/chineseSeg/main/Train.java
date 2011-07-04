@@ -1,7 +1,13 @@
 package mlfs.chineseSeg.main;
 
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 import mlfs.chineseSeg.corpus.CorpusProcessing;
@@ -18,9 +24,9 @@ public class Train {
 
 	public static void main(String[] args) throws IOException
 	{
-//		CorpusProcessing processing = new CorpusProcessing("corpus/chineseSegment/pku_training.utf8");
-//		processing.buildTrainFile();
-//		processing = null;
+		CorpusProcessing processing = new CorpusProcessing("icwb2-data/training/pku_training.utf8");
+		processing.buildTrainFile();
+		processing = null;
 		
 		TemplateHandler template = new TemplateHandler("chinese_segment_feature_template.txt");
 		
@@ -30,23 +36,40 @@ public class Train {
 		Features featuresHandle = new Features(template, corpus.getTagMap());
 		featuresHandle.statisticFeat(events);
 		
-//		CRFLBFGSTrainer trainer = new CRFLBFGSTrainer(events, featuresHandle) ;
+		CRFLBFGSTrainer trainer = new CRFLBFGSTrainer(events, featuresHandle) ;
 		
-		CRFGISTrainer trainer = new CRFGISTrainer(events, featuresHandle);
+//		CRFGISTrainer trainer = new CRFGISTrainer(events, featuresHandle);
 		
 		CRFModel model = trainer.train();
 		
 		Utils utils = new Utils(model.getCharFeat());
 		
-//		String sentence = "迈向充满希望的新世纪——一九九八年新年讲话（附图片１张）";
-		String sentence = "共同创造美好的新世纪——二○○一年新年贺词";
-		CRFEvent e = utils.parseEvent(sentence);
-		
-		List<String> labels = model.label(e);
-		
-		for (int i=0; i<labels.size(); i++)
+		String sentence = "迈向充满希望的新世纪——一九九八年新年讲话（附图片１张）";
+		BufferedReader in = new BufferedReader(new FileReader(new File("icwb2-data/testing/pku_test.utf8")));
+		PrintWriter out = new PrintWriter(new File("out"));
+		while ((sentence = in.readLine()) != null)
 		{
-			System.out.println(sentence.charAt(i)+"\t"+labels.get(i));
+			CRFEvent e = utils.parseEvent(sentence);
+			
+			List<String> labels = model.label(e);
+			
+			StringBuilder sb = new StringBuilder();
+			for (int i=0; i<labels.size(); i++)
+			{
+				System.out.println(sentence.charAt(i)+"\t"+labels.get(i));
+				if (labels.get(i).equals("B"))
+					sb.append(sentence.charAt(i));
+				else if (labels.get(i).equals("M"))
+					sb.append(sentence.charAt(i));
+				else if (labels.get(i).equals("E"))
+					sb.append(sentence.charAt(i)).append(' ');
+				else if (labels.get(i).equals("S"))
+					sb.append(sentence.charAt(i)).append(' ');
+			}
+			
+			out.println(sb.toString());
 		}
+		in.close();
+		out.close();
 	}
 }
