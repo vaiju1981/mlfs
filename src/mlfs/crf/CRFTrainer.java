@@ -375,7 +375,7 @@ public abstract class CRFTrainer {
 	 * @param b the b
 	 * @return the double
 	 */
-	private static double logSum(double a, double b)
+	public static double logSum(double a, double b)
 	{
 		double max, min;
 		if (a > b)
@@ -388,6 +388,9 @@ public abstract class CRFTrainer {
 			max = b;
 			min = a;
 		}
+		
+		if (max > min+50)
+			return max;
 		
 		return max + Math.log(1.0 + Math.exp(min-max));
 	}

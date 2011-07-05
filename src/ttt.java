@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
+import mlfs.crf.CRFTrainer;
 import mlfs.numerical.AbstractLBFGS;
 
 
@@ -27,8 +28,10 @@ public class ttt {
 //			System.out.println(i);
 //		}
 //		reader.close();
-		double d = 0.0/0.0;
-		System.out.println(d);
+		double max = 50;
+		double min = 1;
+		System.out.println(CRFTrainer.logSum(max, min));
+		
 	}
 }
 

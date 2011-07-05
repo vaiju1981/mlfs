@@ -156,32 +156,12 @@ public class CRFModel {
 						List<Integer> feats = getFeats(e, t, preTag);
 						double tmp = calcLogProb(feats, tag);
 						if (tmp + delta[preTag][t-1] > max)
-							max = tmp + delta[preTag][t-1];
-					}
-					delta[tag][t] = max;
-				}
-				//phi
-				for (int tag=0; tag<m_numTag; tag++)
-				{
-					if (tag==START_TAG || tag==END_TAG)
-						continue;
-					
-					double max = Double.NEGATIVE_INFINITY;
-					int maxIdx = -1;
-					for (int preTag=0; preTag<m_numTag; preTag++)
-					{
-						if (preTag==START_TAG || preTag==END_TAG)
-							continue;
-						
-						List<Integer> bigramFeats = getBigramFeats(e, t, preTag);
-						double tmp = calcLogProb(bigramFeats, tag);
-						if (tmp + delta[preTag][t-1] > max)
 						{
 							max = tmp + delta[preTag][t-1];
-							maxIdx = preTag;
+							phi[tag][t] = preTag;
 						}
 					}
-					phi[tag][t] = maxIdx;
+					delta[tag][t] = max;
 				}
 			}
 		}
