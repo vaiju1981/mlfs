@@ -1,1 +1,0 @@
-这个L-BFGS的实现来自：http://riso.sourceforge.net/
