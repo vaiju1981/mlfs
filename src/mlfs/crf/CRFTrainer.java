@@ -68,11 +68,9 @@ public abstract class CRFTrainer {
 	/** tag总数. */
 	protected int m_numTag;
 	
-	/**
-	 * 禁止调用无参数的构造函数.
-	 */
-	private CRFTrainer(){}
-
+	protected int START;
+	protected int END;
+	
 	/**
 	 * Instantiates a new cRF trainer.
 	 *
@@ -93,6 +91,9 @@ public abstract class CRFTrainer {
 		m_numTag = m_tagMap.size();
 		
 		logger.info("There are " + m_numFeat + " features in training file");
+		
+		START = m_tagMap.get("START");
+		END = m_tagMap.get("END");
 	}
 	
 	/**
@@ -139,10 +140,12 @@ public abstract class CRFTrainer {
 		{
 			for (int j=0; j<m_numTag; j++)
 			{
-				if (m_observationExpectation[i][j] > 0)
-					m_observationExpectation[i][j] /= m_numEvents;
-				else
-					m_observationExpectation[i][j] = SIMPLE_SMOOTH / m_numEvents;
+//				if (m_observationExpectation[i][j] > 0)
+//					m_observationExpectation[i][j] /= m_numEvents;
+//				else
+//					m_observationExpectation[i][j] = SIMPLE_SMOOTH / m_numEvents;
+				if (m_observationExpectation[i][j] == 0)
+					m_observationExpectation[i][j] = SIMPLE_SMOOTH;
 			}
 		}
 	}
@@ -178,6 +181,7 @@ public abstract class CRFTrainer {
 				logZx[k] =  logSum(logZx[k], logM[0][m_tagMap.get("START")][tag] + logBeta[tag][0]);
 			}
 			
+			System.out.println(logZx[k]);
 			//compute m_modelExpectation
 			for (int t=0; t<=times; t++)
 			{
@@ -291,16 +295,24 @@ public abstract class CRFTrainer {
 	{
 		int time = 0;
 		for (int y=0; y<m_numTag; y++)
+		{
 			logAlpha[y][time] = logM[time][m_tagMap.get("START")][y];
+			System.out.println("logAlpha = " + logAlpha[y][time]);
+		}
 		
 		for (time=1; time<times; time++)
 		{
 			for (int t=0; t<m_numTag; t++)
 			{
+				if (t == START || t == END)
+					continue;
 				for (int p=0; p<m_numTag; p++)
 				{
+					if (p == START || p == END)
+						continue;
 					logAlpha[t][time] = logSum(logAlpha[t][time], logAlpha[p][time-1]+logM[time][p][t]);
 				}
+				System.out.println("logAlpha = " + logAlpha[t][time]);
 			}
 		}
 	}

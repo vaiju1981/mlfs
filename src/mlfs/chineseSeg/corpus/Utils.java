@@ -1,18 +1,22 @@
 package mlfs.chineseSeg.corpus;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import mlfs.chineseSeg.crf.model.CHARACTER_FEATURE;
+import mlfs.chineseSeg.crf.model.Resource;
 import mlfs.crf.model.CRFEvent;
 
 public class Utils {
 	
 	private Map<String, List<String>> CHAR_FEAT;
+	private Resource m_resource;
 	
 	public Utils( Map<String, List<String>> charfeat)
 	{
 		CHAR_FEAT = charfeat;
+		m_resource = Resource.getInstance();
 	}
 	
 	public CRFEvent parseEvent(String line)
@@ -33,8 +37,28 @@ public class Utils {
 			}
 			else
 			{
-				String[] common = new String[]{CHARACTER_FEATURE.OTHERS.getValue()+"", "0", "0", "0", "?"};
-				e.addCharFeat(common);
+				System.out.println(inputs[i]);
+				int type;
+				if (m_resource.isDigit(inputs[i].charAt(0)))
+					type = CHARACTER_FEATURE.DIGIT.getValue();
+				else if (m_resource.isChineseDigit(inputs[i].charAt(0)))
+					type = CHARACTER_FEATURE.CHINESE_DIGIT.getValue();
+				else if (m_resource.isPunctuation(inputs[i].charAt(0)))
+					type = CHARACTER_FEATURE.PUNCTUATION.getValue();
+				else if (m_resource.isLetter(inputs[i].charAt(0)))
+					type = CHARACTER_FEATURE.LETTER.getValue();
+				else 
+					type = CHARACTER_FEATURE.OTHERS.getValue();
+				
+				List<String> common = new ArrayList<String>();
+				common.add(inputs[i]);
+				common.add(type+"");
+				common.add("0");
+				common.add("0");
+				common.add("0");
+				common.add("?");
+				
+				e.charFeat.add(common);
 			}
 		}
 		
