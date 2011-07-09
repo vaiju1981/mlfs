@@ -224,8 +224,7 @@ public abstract class CRFTrainer {
 						for (int f : unigramFeats)
 						{
 							double	tmp =  logAlpha[preTag][t-1] + logM[t][preTag][END] ;
-							for (int tag=0; tag<m_numTag; tag++)
-								m_modelExpectation[f][tag] += Math.exp(tmp - logZx[k]);
+							m_modelExpectation[f][END] += Math.exp(tmp - logZx[k]);
 						}
 						
 						for (int f : bigramFeats)
