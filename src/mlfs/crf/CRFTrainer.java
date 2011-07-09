@@ -185,7 +185,7 @@ public abstract class CRFTrainer {
 				flag = false;
 			}
 			
-			System.out.println(logZx[k]);
+//			System.out.println(logZx[k]);
 			//compute m_modelExpectation
 			for (int t=0; t<=times; t++)
 			{
@@ -352,7 +352,7 @@ public abstract class CRFTrainer {
 					logAlpha[tag][time] = logSum(logAlpha[tag][time], logAlpha[preTag][time-1]+logM[time][preTag][tag], flag);
 					flag = false;
 				}
-				System.out.println("logAlpha = " + logAlpha[tag][time]);
+//				System.out.println("logAlpha = " + logAlpha[tag][time]);
 			}
 		}
 		//debug only
@@ -365,7 +365,7 @@ public abstract class CRFTrainer {
 				w = logSum(w, logAlpha[p][times-1]+logM[times][p][END], flag);
 				flag = false;
 			}
-			System.out.println("final logAlpha = " + w);
+//			System.out.println("final logAlpha = " + w);
 	}
 	
 	/**
@@ -401,7 +401,7 @@ public abstract class CRFTrainer {
 					logBeta[p][time] = logSum(logBeta[p][time], logM[time+1][p][t] + logBeta[t][time+1], flag);
 					flag = false;
 				}
-				System.out.println("logBeta " + logBeta[p][time]);
+//				System.out.println("logBeta " + logBeta[p][time]);
 			}
 		}
 		
@@ -415,7 +415,7 @@ public abstract class CRFTrainer {
 				w = logSum(w, logM[0][START][t] + logBeta[t][0], flag);
 				flag = false;
 			}
-			System.out.println("final logBeta " + w);
+//			System.out.println("final logBeta " + w);
 	}
 
 	/**
