@@ -126,8 +126,14 @@ public class CRFLBFGSTrainer extends CRFTrainer{
 		public void calGradientVal(double[] x, double[] g) {
 			
 			for (int i=0; i<m_numFeat; i++)
+			{
 				for (int j=0; j<m_numTag; j++)
+				{
+//					if (j==START || j==END)
+//						continue;
 					g[i*m_numTag+j] = (m_modelExpectation[i][j] - m_observationExpectation[i][j])/m_numEvents;
+				}
+			}
 			
 		}
 		

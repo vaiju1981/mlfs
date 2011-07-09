@@ -159,7 +159,22 @@ public class CRFGISTrainer extends CRFTrainer{
 	private void updateParameters(double[] x)
 	{
 		for (int i=0; i<m_numFeat; i++)
+		{
 			for (int j=0; j<m_numTag; j++)
-					x[i*m_numTag+j] += CONSTANT_INVERSE_C * Math.log(m_observationExpectation[i][j]/m_modelExpectation[i][j]);
+			{
+				//不跳过START和END
+//				if (j==START || j==END)
+//					continue;
+				if (m_observationExpectation[i][j] == 0)
+				{
+					System.out.println("obsvExp = 0\t" + i + "\t" + j);
+				}
+				if (m_modelExpectation[i][j] == 0)
+				{
+					System.out.println("modelExpt = 0\t" + i +"\t" + j +"\t obsvexp = " + m_observationExpectation[i][j]);
+				}
+				x[i*m_numTag+j] += CONSTANT_INVERSE_C * Math.log(m_observationExpectation[i][j]/m_modelExpectation[i][j]);
+			}
+		}
 	}
 }

@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
- * Last Update:Jul 4, 2011
+ * Last Update:Jul 8, 2011
  * 
  */
 package mlfs.crf;
@@ -124,13 +124,13 @@ public abstract class CRFTrainer {
 			{
 				List<Integer> feats = null;
 				if (i == 0)
-					feats = m_featHandler.getFeatures(event, m_tagMap.get("START"), i);
+					feats = m_featHandler.getFeatures(event, START, i);
 				else
 					feats = m_featHandler.getFeatures(event, event.labels[i-1],  i);
 				
 				for (int f : feats)
 					if (i == event.inputs.length)
-						m_observationExpectation[f][m_tagMap.get("END")] += 1.0;
+						m_observationExpectation[f][END]+= 1.0;
 					else
 						m_observationExpectation[f][event.labels[i]] += 1.0;
 			}
@@ -140,10 +140,10 @@ public abstract class CRFTrainer {
 		{
 			for (int j=0; j<m_numTag; j++)
 			{
-//				if (m_observationExpectation[i][j] > 0)
-//					m_observationExpectation[i][j] /= m_numEvents;
-//				else
-//					m_observationExpectation[i][j] = SIMPLE_SMOOTH / m_numEvents;
+				//没有除以m_numEvent因为observationExpectation和
+				//modelExpectation都需要除以m_numEvent，留给
+				//最优化方法（目前包括GIS、LBFGS）处理
+				//GIS约去了，LBFGS求导时候除以m_numEvent
 				if (m_observationExpectation[i][j] == 0)
 					m_observationExpectation[i][j] = SIMPLE_SMOOTH;
 			}
@@ -176,9 +176,13 @@ public abstract class CRFTrainer {
 			backword(logBeta, times, logM);
 			
 			//compute Zx[]
+			boolean flag = true;
 			for (int tag = 0; tag<m_numTag; tag++)
 			{
-				logZx[k] =  logSum(logZx[k], logM[0][m_tagMap.get("START")][tag] + logBeta[tag][0]);
+				if (tag==START || tag==END)
+					continue;
+				logZx[k] =  logSum(logZx[k], logM[0][START][tag] + logBeta[tag][0], flag);
+				flag = false;
 			}
 			
 			System.out.println(logZx[k]);
@@ -189,18 +193,20 @@ public abstract class CRFTrainer {
 				{
 					List<Integer> unigramFeats = m_featHandler.getUnigramFeat(event, t);
 					List<String> bigramPred   = m_featHandler.getBigramPred(event, t);
-					List<Integer> bigramFeats = m_featHandler.getBigramFeat(bigramPred, m_tagMap.get("START"));
+					List<Integer> bigramFeats = m_featHandler.getBigramFeat(bigramPred, START);
 					for (int tag=0; tag<m_numTag; tag++)
 					{
+						if (tag==START || tag==END)
+							continue;
 						for (int f : unigramFeats)
 						{
-							double	tmp =  logM[t][m_tagMap.get("START")][tag] + logBeta[tag][t];				
+							double	tmp =  logM[t][START][tag] + logBeta[tag][t];				
 							m_modelExpectation[f][tag] += Math.exp(tmp - logZx[k]);
 						}
 							
 						for (int f : bigramFeats)
 						{
-							double	tmp =  logM[t][m_tagMap.get("START")][tag] + logBeta[tag][t];						
+							double	tmp =  logM[t][START][tag] + logBeta[tag][t];						
 							m_modelExpectation[f][tag] += Math.exp(tmp - logZx[k]);
 						}
 						
@@ -208,22 +214,24 @@ public abstract class CRFTrainer {
 				}
 				else if (t == times)//END
 				{
-					int endTag = m_tagMap.get("END");
 					for (int preTag=0; preTag<m_numTag; preTag++)
 					{
+						if (preTag==START || preTag==END)
+							continue;
 						List<Integer> unigramFeats = m_featHandler.getUnigramFeat(event, t);
 						List<String> bigramPred   = m_featHandler.getBigramPred(event, t);
 						List<Integer> bigramFeats = m_featHandler.getBigramFeat(bigramPred, preTag);
 						for (int f : unigramFeats)
 						{
-							double	tmp =  logAlpha[preTag][t-1] + logM[t][preTag][endTag] ;
-							m_modelExpectation[f][endTag] += Math.exp(tmp - logZx[k]);
+							double	tmp =  logAlpha[preTag][t-1] + logM[t][preTag][END] ;
+							for (int tag=0; tag<m_numTag; tag++)
+								m_modelExpectation[f][tag] += Math.exp(tmp - logZx[k]);
 						}
 						
 						for (int f : bigramFeats)
 						{
-							double	tmp =  logAlpha[preTag][t-1] + logM[t][preTag][endTag] ;
-							m_modelExpectation[f][endTag] += Math.exp(tmp - logZx[k]);
+							double	tmp =  logAlpha[preTag][t-1] + logM[t][preTag][END] ;
+							m_modelExpectation[f][END] += Math.exp(tmp - logZx[k]);
 						}						
 					}
 				}
@@ -231,11 +239,15 @@ public abstract class CRFTrainer {
 				{
 					for (int preTag=0; preTag<m_numTag; preTag++)
 					{
+						if (preTag==START || preTag==END)
+							continue;
 						List<Integer> unigramFeats = m_featHandler.getUnigramFeat(event, t);
 						List<String> bigramPred   = m_featHandler.getBigramPred(event, t);
 						List<Integer> bigramFeats = m_featHandler.getBigramFeat(bigramPred, preTag);
 						for (int tag=0; tag<m_numTag; tag++)
 						{
+							if (tag==START || tag==END)
+								continue;
 							for (int f : unigramFeats)
 							{
 								double	tmp =  logAlpha[preTag][t-1] + logM[t][preTag][tag] + logBeta[tag][t];
@@ -269,18 +281,42 @@ public abstract class CRFTrainer {
 	protected void calcMatrix(double[][][] logM, CRFEvent event, double[] solutions)
 	{
 		int len = event.inputs.length;
-		for (int i=0; i<=len; i++)
+		//i == 0
+		List<Integer> feats = m_featHandler.getFeatures(event, START, 0);
+		for (int tag=0; tag<m_numTag; tag++)
+		{
+			if (tag==START || tag==END)
+				continue;
+			for (int f : feats)
+				logM[0][START][tag] += solutions[f*m_numTag+tag];
+		}
+		// i== 1 to len-1
+		for (int i=1; i<len; i++)
 		{
 			for (int preTag=0; preTag<m_numTag; preTag++)
 			{
-				List<Integer> feats = m_featHandler.getFeatures(event, preTag, i);
+				if (preTag==START||preTag==END)
+					continue;
+				feats = m_featHandler.getFeatures(event, preTag, i);
 				for (int tag=0; tag<m_numTag; tag++)
 				{
+					if (tag==START || tag==END)
+						continue;
 					for (int f : feats)
 						logM[i][preTag][tag] += solutions[f*m_numTag+tag];
 				}
 			}
 		}
+		//i == len
+		for (int preTag=0; preTag<m_numTag; preTag++)
+		{
+			if (preTag==START || preTag==END)
+				continue;
+			feats = m_featHandler.getFeatures(event, preTag, len);
+			for (int f : feats)
+				logM[len][preTag][END] += solutions[f*m_numTag+END];
+		}
+		
 	}
 	
 	/**
@@ -296,25 +332,40 @@ public abstract class CRFTrainer {
 		int time = 0;
 		for (int y=0; y<m_numTag; y++)
 		{
-			logAlpha[y][time] = logM[time][m_tagMap.get("START")][y];
-			System.out.println("logAlpha = " + logAlpha[y][time]);
+			if (y==START || y==END)
+				continue;
+			logAlpha[y][time] = logM[time][START][y];
 		}
 		
+		boolean flag = true;
 		for (time=1; time<times; time++)
 		{
-			for (int t=0; t<m_numTag; t++)
+			for (int tag=0; tag<m_numTag; tag++)
 			{
-				if (t == START || t == END)
+				flag = true;
+				if (tag == START || tag == END)
 					continue;
-				for (int p=0; p<m_numTag; p++)
+				for (int preTag=0; preTag<m_numTag; preTag++)
 				{
-					if (p == START || p == END)
+					if (preTag == START || preTag == END)
 						continue;
-					logAlpha[t][time] = logSum(logAlpha[t][time], logAlpha[p][time-1]+logM[time][p][t]);
+					logAlpha[tag][time] = logSum(logAlpha[tag][time], logAlpha[preTag][time-1]+logM[time][preTag][tag], flag);
+					flag = false;
 				}
-				System.out.println("logAlpha = " + logAlpha[t][time]);
+				System.out.println("logAlpha = " + logAlpha[tag][time]);
 			}
 		}
+		//debug only
+			double w = 0.0;
+			flag = true;
+			for (int p=0; p<m_numTag; p++)
+			{
+				if (p == START || p == END)
+					continue;
+				w = logSum(w, logAlpha[p][times-1]+logM[times][p][END], flag);
+				flag = false;
+			}
+			System.out.println("final logAlpha = " + w);
 	}
 	
 	/**
@@ -329,18 +380,42 @@ public abstract class CRFTrainer {
 	{
 		int time = times-1;
 		for (int y=0; y<m_numTag; y++)
-				logBeta[y][time] = logM[time+1][y][m_tagMap.get("END")];
+		{
+			if (y==START || y==END)
+				continue;
+			logBeta[y][time] = logM[time+1][y][END];
+		}
 		
+		boolean flag = true;
 		for (time=times-2; time>=0; time--)
 		{
 			for (int p=0; p<m_numTag; p++)
 			{
+				if (p == START || p == END)
+					continue;
+				flag = true;
 				for (int t=0; t<m_numTag; t++)
 				{
-					logBeta[p][time] = logSum(logBeta[p][time], logM[time+1][p][t] + logBeta[t][time+1]);
+					if (t == START || t == END)
+						continue;
+					logBeta[p][time] = logSum(logBeta[p][time], logM[time+1][p][t] + logBeta[t][time+1], flag);
+					flag = false;
 				}
+				System.out.println("logBeta " + logBeta[p][time]);
 			}
 		}
+		
+		//debug only
+			double w = 0.0;
+			flag = true;
+			for (int t=0; t<m_numTag; t++)
+			{
+				if (t == START || t == END)
+					continue;
+				w = logSum(w, logM[0][START][t] + logBeta[t][0], flag);
+				flag = false;
+			}
+			System.out.println("final logBeta " + w);
 	}
 
 	/**
@@ -361,7 +436,7 @@ public abstract class CRFTrainer {
 			{
 				List<Integer> feats = null;
 				if (idx == 0)
-					feats = m_featHandler.getFeatures(e, m_tagMap.get("START"),  idx );
+					feats = m_featHandler.getFeatures(e, START,  idx );
 				else
 					feats = m_featHandler.getFeatures(e, e.labels[idx-1], idx );
 					
@@ -369,7 +444,7 @@ public abstract class CRFTrainer {
 					if (idx!=len)
 						f += x[feature*m_numTag + e.labels[idx]];
 					else
-						f += x[feature*m_numTag + m_tagMap.get("END")];
+						f += x[feature*m_numTag + END];
 			}
 			
 			f -= logZx[i];
@@ -381,14 +456,17 @@ public abstract class CRFTrainer {
 	/**
 	 * log求和
 	 * 假设a和b分别是x和y的log值，即a=log(x)且b=log(y)
-	 * 返回结果是log(x+y)即log(exp(a) + exp(b))
+	 * 返回结果是log(x+y)即log(exp(a) + exp(b)).
 	 *
 	 * @param a the a
 	 * @param b the b
+	 * @param flg 如果flag为true，则直接返回b的值，否则返回相应计算值
 	 * @return the double
 	 */
-	public static double logSum(double a, double b)
+	private static double logSum(double a, double b, boolean flg)
 	{
+		if (flg)
+			return b;
 		double max, min;
 		if (a > b)
 		{

@@ -93,11 +93,7 @@ public class Features {
 				if (i < len)
 					tag = event.labels[i];
 					
-				
 				List<String> unigramPred = m_template.getUnigramPred(event, i);
-				List<String> bigramPred = m_template.getBigramPred(event, i);
-				
-					
 				for (String predicate : unigramPred)
 				{
 					String unigramFeat = predicate;
@@ -108,6 +104,8 @@ public class Features {
 						m_featCounter++;
 					}
 				}
+				
+				List<String> bigramPred = m_template.getBigramPred(event, i);
 				for (String predicate : bigramPred)
 				{
 					String bigramFeat = predicate + FEATURE_JOIN +preTag;
@@ -132,7 +130,7 @@ public class Features {
 	 */
 	public List<Integer> getFeatures(CRFEvent event, int preTag, int idx)
 	{
-		List<Integer> feats = getUnigramFeat(event, idx);
+		List<Integer> feats = 	getUnigramFeat(event, idx);
 		
 		List<String> bigramPred = getBigramPred(event, idx);
 		
