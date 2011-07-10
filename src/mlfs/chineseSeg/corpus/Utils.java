@@ -37,7 +37,6 @@ public class Utils {
 			}
 			else
 			{
-				System.out.println(inputs[i]);
 				int type;
 				if (m_resource.isDigit(inputs[i].charAt(0)))
 					type = CHARACTER_FEATURE.DIGIT.getValue();
