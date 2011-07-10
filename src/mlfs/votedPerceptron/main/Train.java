@@ -11,7 +11,7 @@ import mlfs.votedPerceptron.model.VotedPerceptronModel;
 public class Train {
 
 	public static void main(String[] args) throws IOException {
-		CorpusReader reader = new CorpusReader("a1a.txt");
+		CorpusReader reader = new CorpusReader("corpus/votedperceptron/a1a.txt");
 		List<VPEvent> events = reader.getAllEvent();
 		
 		VPTrainer trainer = new VPTrainer(events);

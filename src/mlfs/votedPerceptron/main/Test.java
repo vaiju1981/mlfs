@@ -17,7 +17,7 @@ public class Test {
 		int t = 0;
 		int f = 0;
 		System.out.println("loading all test events");
-		CorpusReader reader = new CorpusReader("a1a.t");
+		CorpusReader reader = new CorpusReader("corpus/votedperceptron/a1a.t");
 		System.out.println("Predict...");
 		List<VPEvent> events = reader.getAllEvent();
 		for (VPEvent e : events)
