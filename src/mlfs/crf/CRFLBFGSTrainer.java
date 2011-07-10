@@ -57,7 +57,7 @@ public class CRFLBFGSTrainer extends CRFTrainer{
 	@Override
 	public CRFModel train() throws IOException
 	{
-		return train(50);
+		return train(600);
 	}
 	
 	/* (non-Javadoc)

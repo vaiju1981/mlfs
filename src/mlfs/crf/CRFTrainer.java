@@ -136,18 +136,18 @@ public abstract class CRFTrainer {
 			}
 		}
 		
-		for (int i=0; i<m_numFeat; i++)
-		{
-			for (int j=0; j<m_numTag; j++)
-			{
-				//没有除以m_numEvent因为observationExpectation和
-				//modelExpectation都需要除以m_numEvent，留给
-				//最优化方法（目前包括GIS、LBFGS）处理
-				//GIS约去了，LBFGS求导时候除以m_numEvent
-				if (m_observationExpectation[i][j] == 0)
-					m_observationExpectation[i][j] = SIMPLE_SMOOTH;
-			}
-		}
+//		for (int i=0; i<m_numFeat; i++)
+//		{
+//			for (int j=0; j<m_numTag; j++)
+//			{
+//				//没有除以m_numEvent因为observationExpectation和
+//				//modelExpectation都需要除以m_numEvent，留给
+//				//最优化方法（目前包括GIS、LBFGS）处理
+//				//GIS约去了，LBFGS求导时候除以m_numEvent
+//				if (m_observationExpectation[i][j] == 0)
+//					m_observationExpectation[i][j] = SIMPLE_SMOOTH;
+//			}
+//		}
 	}
 	
 	/**
