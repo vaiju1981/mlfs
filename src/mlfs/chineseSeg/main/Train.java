@@ -45,7 +45,8 @@ public class Train {
 		Utils utils = new Utils(model.getCharFeat());
 		
 //		String sentence = "迈向充满希望的新世纪——一九九八年新年讲话（附图片１张）";
-		String sentence = "中国人民进入新世纪的主要任务，就是继续推进现代化建设，完成祖国统一，维护世界和平与促进共同发展。";
+//		String sentence = "中国人民进入新世纪的主要任务，就是继续推进现代化建设，完成祖国统一，维护世界和平与促进共同发展。";
+		String sentence = "中国";
 //		CRFEvent e = utils.parseEvent(sentence);
 //		List<String> labels = model.label(e);
 //		for (int i=0; i<labels.size(); i++)
