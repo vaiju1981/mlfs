@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
- * Last Update:Jul 3, 2011
+ * Last Update:Jul 10, 2011
  * 
  */
 package mlfs.crf.model;
@@ -40,8 +40,10 @@ public class CRFEvent {
 	/** 标签. */
 	public int[] labels;
 	
-	/** 每一个输入对应一个特征序列. */
+	/** 每一个输入对应一个特征序列,由用户自己提供的特征文件读取出来. */
 	public List<List<String>> charFeat;
+	
+	public List<UnigramBigram> unigramBigramFeats;//每个元素是针对input[i]的unigram特征和bigram特征
 	
 	/**
 	 * Instantiates a new cRF event.
@@ -57,6 +59,7 @@ public class CRFEvent {
 		this.labels = labels;
 		this.inputs = inputs;
 		charFeat = new ArrayList<List<String>>();
+		unigramBigramFeats = new ArrayList<UnigramBigram>(inputs.length+1);//多一个END元素
 	}
 	
 	/**

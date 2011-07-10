@@ -38,9 +38,6 @@ public abstract class CRFTrainer {
 	/** The logger. */
 	private Logger logger = Logger.getLogger(CRFTrainer.class.getName());
 	
-	/** 对未出现特征的一个简单平滑. */
-	private double SIMPLE_SMOOTH = 0.1;
-	
 	/** 特征处理类. */
 	protected Features m_featHandler;
 	
@@ -136,18 +133,6 @@ public abstract class CRFTrainer {
 			}
 		}
 		
-//		for (int i=0; i<m_numFeat; i++)
-//		{
-//			for (int j=0; j<m_numTag; j++)
-//			{
-//				//没有除以m_numEvent因为observationExpectation和
-//				//modelExpectation都需要除以m_numEvent，留给
-//				//最优化方法（目前包括GIS、LBFGS）处理
-//				//GIS约去了，LBFGS求导时候除以m_numEvent
-//				if (m_observationExpectation[i][j] == 0)
-//					m_observationExpectation[i][j] = SIMPLE_SMOOTH;
-//			}
-//		}
 	}
 	
 	/**
@@ -192,8 +177,7 @@ public abstract class CRFTrainer {
 				if (t == 0)
 				{
 					List<Integer> unigramFeats = m_featHandler.getUnigramFeat(event, t);
-					List<String> bigramPred   = m_featHandler.getBigramPred(event, t);
-					List<Integer> bigramFeats = m_featHandler.getBigramFeat(bigramPred, START);
+					List<Integer> bigramFeats = m_featHandler.getBigramFeat(event, START, t);
 					for (int tag=0; tag<m_numTag; tag++)
 					{
 						if (tag==START || tag==END)
@@ -219,8 +203,7 @@ public abstract class CRFTrainer {
 						if (preTag==START || preTag==END)
 							continue;
 						List<Integer> unigramFeats = m_featHandler.getUnigramFeat(event, t);
-						List<String> bigramPred   = m_featHandler.getBigramPred(event, t);
-						List<Integer> bigramFeats = m_featHandler.getBigramFeat(bigramPred, preTag);
+						List<Integer> bigramFeats = m_featHandler.getBigramFeat(event, preTag, t);
 						for (int f : unigramFeats)
 						{
 							double	tmp =  logAlpha[preTag][t-1] + logM[t][preTag][END] ;
@@ -241,8 +224,7 @@ public abstract class CRFTrainer {
 						if (preTag==START || preTag==END)
 							continue;
 						List<Integer> unigramFeats = m_featHandler.getUnigramFeat(event, t);
-						List<String> bigramPred   = m_featHandler.getBigramPred(event, t);
-						List<Integer> bigramFeats = m_featHandler.getBigramFeat(bigramPred, preTag);
+						List<Integer> bigramFeats = m_featHandler.getBigramFeat(event, preTag, t);
 						for (int tag=0; tag<m_numTag; tag++)
 						{
 							if (tag==START || tag==END)
