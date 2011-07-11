@@ -152,7 +152,7 @@ public class Features {
 						unigrams.add(m_featIdMap.get(unigramFeat));
 				}
 				
-				Map<Integer, List<Integer>> bigrams = new HashMap<Integer, List<Integer>>();
+				List<List<Integer>> bigrams = new ArrayList<List<Integer>>(m_numTag);
 				for (int preTag=0; preTag<m_numTag; preTag++)
 				{
 					List<Integer> bigramFeats = new ArrayList<Integer>();
@@ -164,7 +164,7 @@ public class Features {
 						if (m_featIdMap.containsKey(bigramFeat))
 							bigramFeats.add(m_featIdMap.get(bigramFeat));
 					}
-					bigrams.put(preTag, bigramFeats);
+					bigrams.add(bigramFeats);
 				}
 				event.unigramBigramFeats.add(new UnigramBigram(unigrams, bigrams));
 			}

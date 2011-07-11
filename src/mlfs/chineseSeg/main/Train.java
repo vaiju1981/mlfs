@@ -51,33 +51,33 @@ public class Train {
 //		for (int i=0; i<labels.size(); i++)
 //			System.out.println(sentence.charAt(i)+"\t"+labels.get(i));
 		
-//		BufferedReader in = new BufferedReader(new FileReader(new File("icwb2-data/testing/pku_test.utf8")));
-//		PrintWriter out = new PrintWriter(new File("out"));
-//		while ((sentence = in.readLine()) != null)
-//		{
-//			if (sentence.trim().length() == 0)
-//				continue;
-//			CRFEvent e = utils.parseEvent(sentence);
-//			
-//			List<String> labels = model.label(e);
-//			
-//			StringBuilder sb = new StringBuilder();
-//			for (int i=0; i<labels.size(); i++)
-//			{
-//				System.out.println(sentence.charAt(i)+"\t"+labels.get(i));
-//				if (labels.get(i).equals("B"))
-//					sb.append(sentence.charAt(i));
-//				else if (labels.get(i).equals("M"))
-//					sb.append(sentence.charAt(i));
-//				else if (labels.get(i).equals("E"))
-//					sb.append(sentence.charAt(i)).append(' ');
-//				else if (labels.get(i).equals("S"))
-//					sb.append(sentence.charAt(i)).append(' ');
-//			}
-//			
-//			out.println(sb.toString());
-//		}
-//		in.close();
-//		out.close();
+		BufferedReader in = new BufferedReader(new FileReader(new File("icwb2-data/testing/pku_test.utf8")));
+		PrintWriter out = new PrintWriter(new File("out"));
+		while ((sentence = in.readLine()) != null)
+		{
+			if (sentence.trim().length() == 0)
+				continue;
+			CRFEvent e = utils.parseEvent(sentence);
+			
+			List<String> labels = model.label(e);
+			
+			StringBuilder sb = new StringBuilder();
+			for (int i=0; i<labels.size(); i++)
+			{
+				System.out.println(sentence.charAt(i)+"\t"+labels.get(i));
+				if (labels.get(i).equals("B"))
+					sb.append(sentence.charAt(i));
+				else if (labels.get(i).equals("M"))
+					sb.append(sentence.charAt(i));
+				else if (labels.get(i).equals("E"))
+					sb.append(sentence.charAt(i)).append(' ');
+				else if (labels.get(i).equals("S"))
+					sb.append(sentence.charAt(i)).append(' ');
+			}
+			
+			out.println(sb.toString());
+		}
+		in.close();
+		out.close();
 	}
 }

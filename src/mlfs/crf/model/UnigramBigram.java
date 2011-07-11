@@ -27,9 +27,9 @@ import java.util.Map;
 public class UnigramBigram  {
 
 	private List<Integer> m_unigrams;
-	private Map<Integer, List<Integer>> m_bigrams;
+	private List<List<Integer>> m_bigrams;
 	
-	public UnigramBigram(List<Integer> u, Map<Integer, List<Integer>> b)
+	public UnigramBigram(List<Integer> u, List<List<Integer>> b)
 	{
 		this.m_unigrams = u;
 		this.m_bigrams = b;
@@ -40,7 +40,7 @@ public class UnigramBigram  {
 		return m_unigrams;
 	}
 	
-	public Map<Integer, List<Integer>> getBigramFeats()
+	public List<List<Integer>> getBigramFeats()
 	{
 		return m_bigrams;
 	}
