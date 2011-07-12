@@ -32,4 +32,37 @@ public class Utils {
 		in.close();
 		return ret;
 	}
+	
+	/**
+	 * log求和
+	 * 假设a和b分别是x和y的log值，即a=log(x)且b=log(y)
+	 * 返回结果是log(x+y)即log(exp(a) + exp(b)).
+	 *
+	 * @param a the a
+	 * @param b the b
+	 * @param flg 如果flag为true，则直接返回b的值，否则返回相应计算值
+	 * @return the double
+	 */
+	public static double logSum(double a, double b, boolean flg)
+	{
+		if (flg)
+			return b;
+		double max, min;
+		if (a > b)
+		{
+			max = a;
+			min = b;
+		}
+		else
+		{
+			max = b;
+			min = a;
+		}
+		
+		if (max > min+50)
+			return max;
+		
+		return max + Math.log(1.0 + Math.exp(min-max));
+	}
 }
+
