@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
- * Last Update:Jul 4, 2011
+ * Last Update:Jul 12, 2011
  * 
  */
 package mlfs.crf;
@@ -155,11 +155,11 @@ public class TemplateHandler {
 					throw new ArrayIndexOutOfBoundsException("col = " + col);
 				
 				if (row <0)
-					sb.append(START).append(PREDICATE_JOIN);
+					sb.append(rc.row).append('_').append(rc.col).append(START).append(PREDICATE_JOIN);
 				else if (row > event.charFeat.size()-1)
-					sb.append(END).append(PREDICATE_JOIN);
+					sb.append(rc.row).append('_').append(rc.col).append(END).append(PREDICATE_JOIN);
 				else
-					sb.append(event.charFeat.get(row).get(col)).append(PREDICATE_JOIN);
+					sb.append(rc.row).append('_').append(rc.col).append(event.charFeat.get(row).get(col)).append(PREDICATE_JOIN);
 			}
 			predicates.add(sb.toString());
 		}

@@ -67,8 +67,8 @@ public class CRFLBFGSTrainer extends CRFTrainer{
 	public CRFModel train(int numIter) throws IOException
 	{
 		logger.info("Calc oberservation expectation...");
-		m_observationExpectation = new double[m_numFeat][m_numTag];
-		calcObservationExpectation();
+//		m_observationExpectation = new double[m_numFeat][m_numTag];
+//		calcObservationExpectation();
 		
 		logger.info("L-BFGS...");
 		m_modelExpectation = new double[m_numFeat][m_numTag];
@@ -77,13 +77,9 @@ public class CRFLBFGSTrainer extends CRFTrainer{
 		lbfgs.getSolution(solutions);
 		lbfgs = null;
 		
-		m_observationExpectation = null;
+//		m_observationExpectation = null;
 		m_modelExpectation = null;
-		m_parameters = new double[m_numFeat][m_numTag];
-		for (int i=0; i<m_numFeat; i++)
-			for (int j=0; j<m_numTag; j++)
-				m_parameters[i][j] = solutions[i*m_numTag+j];
-		return new CRFModel(CRFEvent.CHAR_FEAT, m_featHandler.getFeatMap(), m_tagMap, m_parameters, m_featHandler.getTemplateFile());
+		return new CRFModel(CRFEvent.CHAR_FEAT, m_featHandler.getFeatMap(), m_tagMap, solutions, m_featHandler);
 	}
 	
 	/**
@@ -104,17 +100,12 @@ public class CRFLBFGSTrainer extends CRFTrainer{
 			super(dimetion, m, numIter);
 		}
 		
-		/** The log zx. */
-		double [] logZx;
-
 		/* 给定参数x，求解目标方程值
 		 * @see mlfs.numerical.AbstractLBFGS#calFunctionVal(double[])
 		 */
 		@Override
 		public double calFunctionVal(double[] x) {
-			logZx = calcModelExpectation(x);
-			
-			double f = 0 - calcloglikelihood(logZx, x);
+			double f  = calcModelExpectation(x);
 			
 			for (double parameter : x)
 				f += parameter*parameter/2.0;//高斯平滑
@@ -129,7 +120,7 @@ public class CRFLBFGSTrainer extends CRFTrainer{
 		public void calGradientVal(double[] x, double[] g) {
 			for (int i=0; i<m_numFeat; i++)
 				for (int j=0; j<m_numTag; j++)
-					g[i*m_numTag+j] = (m_modelExpectation[i][j] - m_observationExpectation[i][j])/m_numEvents + x[i*m_numTag+j];
+					g[i*m_numTag+j] = m_modelExpectation[i][j]/m_numEvents + x[i*m_numTag+j];
 		}
 		
 	}

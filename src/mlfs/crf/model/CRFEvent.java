@@ -43,8 +43,6 @@ public class CRFEvent {
 	/** 每一个输入对应一个特征序列,由用户自己提供的特征文件读取出来. */
 	public List<List<String>> charFeat;
 	
-	public List<UnigramBigram> unigramBigramFeats;//每个元素是针对input[i]的unigram特征和bigram特征
-	
 	/**
 	 * Instantiates a new cRF event.
 	 *
@@ -59,7 +57,6 @@ public class CRFEvent {
 		this.labels = labels;
 		this.inputs = inputs;
 		charFeat = new ArrayList<List<String>>();
-		unigramBigramFeats = new ArrayList<UnigramBigram>(inputs.length+1);//多一个END元素
 	}
 	
 	/**

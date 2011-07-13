@@ -97,7 +97,7 @@ public abstract class AbstractLBFGS {
 		
 		//init x[]
 		for (int i=0; i<n; i++)
-			x[i] = 0.0001;
+			x[i] = 0.000;
 		
 		double f = 0.0;
 		do
