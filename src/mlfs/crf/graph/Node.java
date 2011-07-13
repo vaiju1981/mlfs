@@ -47,7 +47,7 @@ public class Node {
 	/** beta . */
 	private double m_beta;
 	
-	/** unigram概率. */
+	/** unigram概率, 未归一化. */
 	private double m_unigramProb;
 	
 	/** 满足的unigram特征. */
@@ -59,6 +59,13 @@ public class Node {
 	/** 链出的边. */
 	public final List<Edge> m_redge;
 	
+	/**
+	 * Instantiates a new node.
+	 *
+	 * @param pos 偏移量 
+	 * @param tag 标签
+	 * @param ansTag 标准答案的标签
+	 */
 	public Node(int pos, int tag, int ansTag)
 	{
 		m_pos = pos;
@@ -69,15 +76,26 @@ public class Node {
 		m_redge = new ArrayList<Edge>();
 	}
 	
+	/**
+	 * Adds the left edge.
+	 *
+	 * @param e 指向当前节点的边
+	 */
 	public void addLeftEdge(Edge e)
 	{
 		m_ledge.add(e);
 	}
 	
+	/**
+	 * Adds the right edge.
+	 *
+	 * @param e 由当前节点指出的边
+	 */
 	public void addRightEdge(Edge e)
 	{
 		m_redge.add(e);
 	}
+	
 	/**
 	 * 计算unigram概率
 	 *
@@ -164,6 +182,11 @@ public class Node {
 		return m_unigramProb;
 	}
 	
+	/**
+	 * 返回当前node满足的unigram特征
+	 *
+	 * @return the features
+	 */
 	public List<Integer> getFeatures()
 	{
 		return m_features;

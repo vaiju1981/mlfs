@@ -49,12 +49,7 @@ public class Features {
 	/** tag和id对应的map. */
 	private Map<String, Integer> m_tagMap;
 	
-//	/** START tag的int值. */
-//	private int START;
-//	
-//	/** END tag的int值. */
-//	private int END;
-	
+	/** 连接字符. */
 	public static char FEATURE_JOIN = '#';
 	
 	/**
@@ -71,6 +66,7 @@ public class Features {
 		m_tagMap = tagMap;
 		
 		statisticFeat(events);
+		logger.info("Feature Number : " + m_featCounter);
 	}
 	
 	/**
@@ -85,13 +81,11 @@ public class Features {
 		for (CRFEvent event : events)
 		{
 			int len = event.inputs.length;
-//			for (int i=0; i<=len; i++)//最后一个tag是end
 			for (int i=0; i<len; i++)
 			{
 				List<String> unigramPred = m_template.getUnigramPred(event, i);
 				for (String predicate : unigramPred)
 				{
-					System.out.println("Uingram : " + predicate);
 					String unigramFeat = predicate;
 					
 					if (!m_featIdMap.containsKey(unigramFeat))
@@ -121,30 +115,7 @@ public class Features {
 				}//i != 0
 			}
 		}
-		System.out.println("Feat num : " + m_featCounter);
 	}
-	
-//	/**
-//	 * 给定前一个tag，event以及针对event的哪一个，获取满足的特征集合
-//	 *
-//	 * @param event the event
-//	 * @param preTag the pre tag
-//	 * @param idx the idx
-//	 * @return the features
-//	 */
-//	public List<Integer> getFeatures(CRFEvent event, int preTag, int idx)
-//	{
-//		List<Integer> feats = 	getUnigramFeat(event, idx);
-//		
-//		if (idx > 0)
-//		{
-//			List<String> bigramPred = getBigramPred(event, idx);
-//			
-//			feats.addAll(getBigramFeat(bigramPred, preTag));
-//		}
-//		
-//		return feats;
-//	}
 	
 	/**
 	 * 获取特征总数.
@@ -185,19 +156,7 @@ public class Features {
 	{
 		return m_featIdMap;
 	}
-	
-//	/**
-//	 * Gets the bigram pred.
-//	 *
-//	 * @param event the event
-//	 * @param idx the idx
-//	 * @return the bigram pred
-//	 */
-//	public List<String> getBigramPred(CRFEvent event, int idx)
-//	{
-//		return m_template.getBigramPred(event, idx);
-//	}
-//	
+
 	/**
 	 * Gets the unigram feat.
 	 *

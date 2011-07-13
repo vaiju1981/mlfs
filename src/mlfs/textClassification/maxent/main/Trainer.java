@@ -24,7 +24,6 @@ package mlfs.textClassification.maxent.main;
 import java.io.IOException;
 
 import mlfs.maxent.GIS;
-import mlfs.maxent.MELBFGS;
 import mlfs.maxent.model.MEModel;
 import mlfs.maxent.model.TrainDataHandler;
 import mlfs.textClassification.corpus.CorpusReader;

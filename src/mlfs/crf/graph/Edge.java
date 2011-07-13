@@ -95,11 +95,21 @@ public class Edge {
 		}
 	}
 	
+	/**
+	 * Gets the bigram prob.
+	 *
+	 * @return the bigram prob
+	 */
 	public double getBigramProb()
 	{
 		return m_bigramProb;
 	}
 	
+	/**
+	 * 返回所有满足的bigram信息.
+	 *
+	 * @return the features
+	 */
 	public List<Integer> getFeatures()
 	{
 		return m_features;

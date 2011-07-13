@@ -1,19 +1,57 @@
+/*
+ * Graph.java
+   *  
+ * Author: 罗磊，luoleicn@gmail.com
+   * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+   * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+   * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+   * 
+ * Last Update:2011-7-14
+   * 
+   */
 package mlfs.crf.graph;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import mlfs.crf.Features;
 import mlfs.crf.model.CRFEvent;
 import mlfs.util.Utils;
 
+/**
+ * 有一个CRFEvent建立起来的图
+ */
 public class Graph {
 
+	/** 节点数组. */
 	private Node[][] m_nodes;
+	
+	/** 序列长度. */
 	private int m_seqLen;
+	
+	/** 总共的tag总数. */
 	private int m_numTag;
+	
+	/** 归一化因子. */
 	private double m_Z;
 	
+	/**
+	 * 建立图结构.
+	 *
+	 * @param event CRFEvent序列
+	 * @param featureHandler 特征处理类
+	 * @param parameter 参数
+	 * @return 图对象
+	 */
 	public static Graph buildGraph(CRFEvent event, Features featureHandler, double[] parameter)
 	{
 		Graph graph = new Graph();
@@ -49,29 +87,32 @@ public class Graph {
 		return graph;
 	}
 	
+	/**
+	 * 前向后向算法.
+	 */
 	public void forwardBackword()
 	{
 		for (int time=0; time<m_seqLen; time++)
 			for (int tag=0; tag<m_numTag; tag++)
-			{
 				m_nodes[time][tag].calcAlpha();
-				System.out.println("alpha = " + m_nodes[time][tag].getAlpha());
-			}
 		
 		for (int time=m_seqLen-1; time>=0; time--)
 			for (int tag=0; tag<m_numTag; tag++)
-			{
 				m_nodes[time][tag].calcBeta();
-				System.out.println("beta = " + m_nodes[time][tag].getBeta());
-			}
 		
 		m_Z = 0.0;
 		for (int tag=0; tag<m_numTag; tag++)
 			m_Z = Utils.logSum(m_Z, m_nodes[0][tag].getBeta(), tag==0);
-		System.out.println("Z = " + m_Z);
 	}
 	
 	
+	/**
+	 * 梯度.这个方法，首先计算模型期望，然后用模型期望减去观测期望，结果即为似然估计的导数的相反数，
+	 * 最后返回似然估计的相反数
+	 *
+	 * @param expectation 期望数组
+	 * @return 似然估计的相反数
+	 */
 	public double gradient(double[][] expectation)
 	{
 		for (int i=0; i<m_seqLen; i++)
@@ -81,7 +122,6 @@ public class Graph {
 				Node node = m_nodes[i][j];
 				//unigram
 				double p = Math.exp(node.getAlpha() + node.getBeta() - node.getUnigramProb() - m_Z);
-				System.out.println("unigram exptectation " + p);
 				List<Integer> feats = node.getFeatures();
 				for (int f : feats)
 					expectation[f][j] += p;
@@ -121,18 +161,15 @@ public class Graph {
 			}
 			preAns = ans;
 		}
-		System.out.print("Expectation : ");
-		for (int i=0; i<6; i++)
-		{
-			for (int j=0; j<m_numTag; j++)
-			{
-				System.out.print(expectation[i][j] + " ");
-			}
-		}
-		System.out.println();
+
 		return m_Z - res;//loglikelihood的相反数
 	}
 	
+	/**
+	 * 获取所有的Node节点
+	 *
+	 * @return the nodes
+	 */
 	public Node[][] getNodes()
 	{
 		return m_nodes;

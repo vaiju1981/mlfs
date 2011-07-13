@@ -61,10 +61,6 @@ public class CorpusReader {
 		m_tagCounter = 0;
 		m_tagIdMap = new HashMap<String, Integer>();
 		
-//		m_tagIdMap.put("START", 0);
-//		m_tagCounter++;
-//		m_tagIdMap.put("END", 1);
-//		m_tagCounter++;
 	}
 	
 	/**

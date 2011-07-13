@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import mlfs.crf.Features;
-import mlfs.crf.TemplateHandler;
 import mlfs.crf.graph.Edge;
 import mlfs.crf.graph.Graph;
 import mlfs.crf.graph.Node;
@@ -59,11 +58,6 @@ public class CRFModel {
 	/** The m_num tag. */
 	private int m_numTag;
 	
-//	/** The STAR t_ tag. */
-//	private int START_TAG;
-//	
-//	/** The EN d_ tag. */
-//	private int END_TAG;
 	
 	/**
 	 * Instantiates a new cRF model.
@@ -91,8 +85,7 @@ public class CRFModel {
 		}
 		
 		m_featureHandler = featureHandler;
-//		START_TAG = m_tagMap.get("START");
-//		END_TAG = m_tagMap.get("END");
+
 	}
 	
 	

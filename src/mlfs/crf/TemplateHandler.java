@@ -29,8 +29,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
-
 import mlfs.crf.model.CRFEvent;
 import mlfs.crf.model.RowColumn;
 
@@ -54,7 +52,9 @@ public class TemplateHandler {
 	/** bigram特征模板. */
 	private List<List<RowColumn>> m_bigramPredList;
 	
+	/** 模板连接字符. */
 	public static char PREDICATE_JOIN = '_';
+	
 	/**
 	 * Instantiates a new template reader.
 	 *

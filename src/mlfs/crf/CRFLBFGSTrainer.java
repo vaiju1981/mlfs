@@ -23,7 +23,6 @@ package mlfs.crf;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import mlfs.crf.model.CRFEvent;
@@ -67,19 +66,16 @@ public class CRFLBFGSTrainer extends CRFTrainer{
 	public CRFModel train(int numIter) throws IOException
 	{
 		logger.info("Calc oberservation expectation...");
-//		m_observationExpectation = new double[m_numFeat][m_numTag];
-//		calcObservationExpectation();
 		
 		logger.info("L-BFGS...");
 		m_modelExpectation = new double[m_numFeat][m_numTag];
 		CRF_LBFGS lbfgs = new CRF_LBFGS(m_numFeat*m_numTag, 5, numIter);
-		double[] solutions = new double[m_numFeat*m_numTag];
-		lbfgs.getSolution(solutions);
+		double[] m_parameters = new double[m_numFeat*m_numTag];
+		lbfgs.getSolution(m_parameters);
 		lbfgs = null;
 		
-//		m_observationExpectation = null;
 		m_modelExpectation = null;
-		return new CRFModel(CRFEvent.CHAR_FEAT, m_featHandler.getFeatMap(), m_tagMap, solutions, m_featHandler);
+		return new CRFModel(CRFEvent.CHAR_FEAT, m_featHandler.getFeatMap(), m_tagMap, m_parameters, m_featHandler);
 	}
 	
 	/**
