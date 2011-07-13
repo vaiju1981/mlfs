@@ -123,6 +123,7 @@ public abstract class CRFTrainer {
 			graph.forwardBackword();
 			negLoglikelihood += graph.gradient(m_modelExpectation);
 		}
+//		System.out.println("negLoglikelihood = " +  negLoglikelihood);
 		return negLoglikelihood;
 
 	}

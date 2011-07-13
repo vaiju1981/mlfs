@@ -94,15 +94,22 @@ public class Graph {
 	{
 		for (int time=0; time<m_seqLen; time++)
 			for (int tag=0; tag<m_numTag; tag++)
+			{
 				m_nodes[time][tag].calcAlpha();
+//				System.out.println("m_nodes[" + time + "][" + tag + "] alpha : "+m_nodes[time][tag].getAlpha());
+			}
 		
 		for (int time=m_seqLen-1; time>=0; time--)
 			for (int tag=0; tag<m_numTag; tag++)
+			{
 				m_nodes[time][tag].calcBeta();
+//				System.out.println("m_nodes[" + time + "][" + tag + "] beta" + m_nodes[time][tag].getBeta());
+			}
 		
 		m_Z = 0.0;
 		for (int tag=0; tag<m_numTag; tag++)
 			m_Z = Utils.logSum(m_Z, m_nodes[0][tag].getBeta(), tag==0);
+//		System.out.println("Z = " + m_Z);
 	}
 	
 	
@@ -161,7 +168,18 @@ public class Graph {
 			}
 			preAns = ans;
 		}
-
+		
+//		System.out.print("Expectation : ");
+//		for (int i=0; i<1; i++)
+//		{
+//			for (int j=0; j<m_numTag; j++)
+//			{
+//				System.out.print(expectation[i][j] + " ");
+//			}
+//		}
+//		System.out.println();
+		
+//		System.out.println("s = " + res);
 		return m_Z - res;//loglikelihood的相反数
 	}
 	

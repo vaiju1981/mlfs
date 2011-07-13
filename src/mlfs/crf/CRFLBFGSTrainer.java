@@ -70,7 +70,7 @@ public class CRFLBFGSTrainer extends CRFTrainer{
 		logger.info("L-BFGS...");
 		m_modelExpectation = new double[m_numFeat][m_numTag];
 		CRF_LBFGS lbfgs = new CRF_LBFGS(m_numFeat*m_numTag, 5, numIter);
-		double[] m_parameters = new double[m_numFeat*m_numTag];
+		m_parameters = new double[m_numFeat*m_numTag];
 		lbfgs.getSolution(m_parameters);
 		lbfgs = null;
 		
@@ -116,7 +116,8 @@ public class CRFLBFGSTrainer extends CRFTrainer{
 		public void calGradientVal(double[] x, double[] g) {
 			for (int i=0; i<m_numFeat; i++)
 				for (int j=0; j<m_numTag; j++)
-					g[i*m_numTag+j] = m_modelExpectation[i][j]/m_numEvents + x[i*m_numTag+j];
+					g[i*m_numTag+j] = m_modelExpectation[i][j]+ x[i*m_numTag+j];
+//					g[i*m_numTag+j] = m_modelExpectation[i][j]/m_numEvents + x[i*m_numTag+j];
 		}
 		
 	}

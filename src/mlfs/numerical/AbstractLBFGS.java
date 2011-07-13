@@ -89,7 +89,7 @@ public abstract class AbstractLBFGS {
 		iprint[1] = 0;
 		
 		boolean diagco= false;
-		double eps= 1.0e-5;
+		double eps= 1.0e-7;
 		double xtol= 1.0e-16;
 		int icall=0;
 		int[] iflag = new int[1];
