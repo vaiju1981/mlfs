@@ -66,7 +66,7 @@ public class Features {
 		m_tagMap = tagMap;
 		
 		statisticFeat(events);
-		logger.info("Feature Number : " + m_featCounter);
+		logger.info("Feature Number : " + m_featCounter*m_tagMap.size());
 	}
 	
 	/**
