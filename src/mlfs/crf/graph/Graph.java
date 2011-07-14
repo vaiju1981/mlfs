@@ -54,6 +54,7 @@ public class Graph {
 	 */
 	public static Graph buildGraph(CRFEvent event, Features featureHandler, double[] parameter)
 	{
+		GraphCacher cacher = GraphCacher.getInstance();
 		Graph graph = new Graph();
 		
 		graph.m_seqLen = event.inputs.length;
@@ -64,7 +65,8 @@ public class Graph {
 		{
 			for (int tag=0; tag<graph.m_numTag; tag++)
 			{
-				Node node = new Node(i, tag, event.labels[i]);
+				Node node = cacher.getNode();
+				node.reInit(i, tag, event.labels[i]);
 				node.calcFeatures(event, i, featureHandler);//unigram
 				node.calLogProb(parameter, graph.m_numTag);
 				
@@ -72,7 +74,8 @@ public class Graph {
 				{
 					for (int preTag=0; preTag<graph.m_numTag; preTag++)
 					{
-						Edge edge = new Edge(graph.m_nodes[i-1][preTag], node);
+						Edge edge = cacher.getEdge();
+						edge.reInit(graph.m_nodes[i-1][preTag], node);
 						edge.calFeature(event, i, featureHandler);
 						edge.calcLogProbs(parameter, graph.m_numTag);
 						

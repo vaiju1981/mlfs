@@ -36,10 +36,10 @@ public class Node {
 	/** 在序列中的偏移量. */
 	private int  m_pos;
 	/** tag. */
-	public final int m_y;
+	public int m_y;
 	
 	/** 标准答案的tag. */
-	public final int m_ansTag;
+	public int m_ansTag;
 	
 	/** alpha. */
 	private double m_alpha;
@@ -74,6 +74,16 @@ public class Node {
 		
 		m_ledge = new ArrayList<Edge>();
 		m_redge = new ArrayList<Edge>();
+	}
+	
+	public void reInit(int pos, int tag, int ansTag)
+	{
+		m_pos = pos;
+		m_y = tag;
+		m_ansTag = ansTag;
+		
+		m_ledge.clear();
+		m_redge.clear();
 	}
 	
 	/**

@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
- * Last Update:Jul 3, 2011
+ * Last Update:Jul 13, 2011
  * 
  */
 package mlfs.crf.model;
@@ -41,12 +41,6 @@ public class CRFModel {
 	/** 保存所有训练语料中的CRFEvent特征序列. */
 	private Map<String, List<String>> CHAR_FEAT;
 	
-	/** 特征对应数字的map. */
-	private Map<String, Integer> m_featIdMap;
-	
-	/** tag对应数字的map. */
-	private Map<String, Integer> m_tagMap;
-	
 	/** 数字对应tag的map. */
 	private Map<Integer, String> m_int2tag;
 	
@@ -63,29 +57,24 @@ public class CRFModel {
 	 * Instantiates a new cRF model.
 	 *
 	 * @param charfeats 通过训练文件统计出的所有input以及对应的特征列表
-	 * @param featIdMap the feat id map
 	 * @param tagMap the tag map
 	 * @param parameters the parameters
-	 * @param templatePath 模板文件的路径
+	 * @param featureHandler the feature handler
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public CRFModel(Map<String, List<String>> charfeats, Map<String, Integer> featIdMap,Map<String, Integer> tagMap, double[] parameters, Features featureHandler) throws IOException
+	public CRFModel(Map<String, List<String>> charfeats, Map<String, Integer> tagMap, double[] parameters, Features featureHandler) throws IOException
 	{
 		CHAR_FEAT = charfeats;
-		m_featIdMap = featIdMap;
-		m_tagMap = tagMap;
-		m_numTag = m_tagMap.size();
+		m_numTag = tagMap.size();
 		
 		m_parameters = parameters;
 		
 		m_int2tag = new HashMap<Integer, String>();
-		for (Entry<String, Integer> tagint : m_tagMap.entrySet())
+		for (Entry<String, Integer> tagint : tagMap.entrySet())
 		{
 			m_int2tag.put(tagint.getValue(), tagint.getKey());
 		}
-		
 		m_featureHandler = featureHandler;
-
 	}
 	
 	

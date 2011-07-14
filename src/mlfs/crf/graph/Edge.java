@@ -32,10 +32,10 @@ import mlfs.crf.model.CRFEvent;
 public class Edge {
 
 	/** 左节点. */
-	public final Node m_lnode;
+	public Node m_lnode;
 	
 	/** 右节点. */
-	public final Node m_rnode;
+	public Node m_rnode;
 	
 	/** 边的概率. */
 	private double m_bigramProb;
@@ -55,6 +55,11 @@ public class Edge {
 		this.m_rnode = r;
 	}
 	
+	public void reInit(Node l, Node r)
+	{
+		this.m_lnode = l;
+		this.m_rnode = r;
+	}
 	/**
 	 * 计算这个边的概率，log形式
 	 *
