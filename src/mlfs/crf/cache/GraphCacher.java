@@ -37,7 +37,6 @@ import mlfs.crf.graph.Node;
  */
 public class GraphCacher {
 
-	/** The m_nodes. */
 	private List<Node> m_nodes;
 	
 	private List<Edge> m_edges;

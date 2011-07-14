@@ -39,9 +39,6 @@ public abstract class CRFTrainer {
 	/** The logger. */
 	private Logger logger = Logger.getLogger(CRFTrainer.class.getName());
 	
-//	/** 特征处理类. */
-//	protected Features m_featHandler;
-	
 	/** 特征总数. */
 	protected int m_numFeat;
 	
@@ -73,7 +70,6 @@ public abstract class CRFTrainer {
 	public CRFTrainer(List<CRFEvent> events, Features featHandler) throws IOException
 	{
 		m_numFeat = featHandler.getFeatNum();
-//		m_featHandler = featHandler;
 		
 		m_numEvents = events.size();
 		m_events = events;
@@ -116,11 +112,11 @@ public abstract class CRFTrainer {
 		double negLoglikelihood = 0.0;
 		for (CRFEvent event : m_events)
 		{
+			int len = event.labels.length;
 			Graph graph = Graph.buildGraph(event, m_numTag, solutions);
-			graph.forwardBackword();
-			negLoglikelihood += graph.gradient(m_modelExpectation);
+			graph.forwardBackword(len, m_numTag);
+			negLoglikelihood += graph.gradient(m_modelExpectation, len, m_numTag);
 		}
-//		System.out.println("negLoglikelihood = " +  negLoglikelihood);
 		return negLoglikelihood;
 
 	}

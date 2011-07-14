@@ -16,14 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
- * Last Update:Jul 12, 2011
+ * Last Update:Jul 14, 2011
  * 
  */
 package mlfs.crf;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -72,6 +69,11 @@ public class TemplateHandler {
 		read(lines);
 	}
 	
+	/**
+	 * 构造函数
+	 *
+	 * @param 给定特征模板的集合
+	 */
 	public TemplateHandler(List<String> lines)
 	{
 		this.m_path = null;
@@ -141,9 +143,9 @@ public class TemplateHandler {
 	 * 根据给定的谓词模板，event以及event的中的坐标抽取谓词
 	 *
 	 * @param event the event
-	 * @param idx the idx
+	 * @param idx 偏移量
 	 * @param predList 谓词模板
-	 * @return the list
+	 * @return 抽取的谓词集合
 	 */
 	private List<String> predExtraction(CRFEvent event, int idx,  List<List<RowColumn>> predList)
 	{

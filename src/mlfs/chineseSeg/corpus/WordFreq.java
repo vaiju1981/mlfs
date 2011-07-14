@@ -21,32 +21,19 @@
  */
 package mlfs.chineseSeg.corpus;
 
-/**
- * The Class WordFreq.
- */
+
 public class WordFreq implements Comparable<WordFreq>{
 	
-	/** The letter. */
 	public final char letter;
 	
-	/** The freq. */
 	public final int freq;
 	
-	/**
-	 * Instantiates a new word freq.
-	 *
-	 * @param letter the letter
-	 * @param freq the freq
-	 */
 	public WordFreq(char letter, int freq)
 	{
 		this.letter = letter;
 		this.freq = freq;
 	}
 	
-	/* (non-Javadoc)
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
-	 */
 	@Override
 	public int compareTo(WordFreq o) {
 		return freq - o.freq;

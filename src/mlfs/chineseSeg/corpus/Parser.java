@@ -1,3 +1,24 @@
+/*
+ * Parser.java 
+ * 
+ * Author : 罗磊，luoleicn@gmail.com
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * Last Update:Jul 14, 2011
+ * 
+ */
 package mlfs.chineseSeg.corpus;
 
 import java.util.ArrayList;
@@ -12,15 +33,34 @@ import mlfs.crf.cache.FeatureCacher;
 import mlfs.crf.model.CRFEvent;
 import mlfs.crf.model.CRFModel;
 
+/**
+ *把一行文本，转化为CRFEvent 
+ */
 public class Parser {
 	
+	/**字符特征. */
 	private Map<String, List<String>> CHAR_FEAT;
+	
+	/** 资源. */
 	private Resource m_resource;
+	
+	/** 特征cache. */
 	private FeatureCacher m_cacher;
+	
+	/** 特征id的map. */
 	private Map<String, Integer> m_featIdMap;
+	
+	/** 模板类. */
 	private TemplateHandler m_template;
+	
+	/** tag总数. */
 	private int m_numTag;
 	
+	/**
+	 * Instantiates a new parser.
+	 *
+	 * @param model the model
+	 */
 	public Parser(CRFModel model)
 	{
 		CHAR_FEAT = model.getCharFeat();
@@ -32,6 +72,12 @@ public class Parser {
 		m_numTag = model.getTagNum();
 	}
 	
+	/**
+	 * Parses the event.
+	 *
+	 * @param line the line
+	 * @return the cRF event
+	 */
 	public CRFEvent parseEvent(String line)
 	{
 		char[] chars = line.toCharArray();

@@ -1,24 +1,24 @@
 /*
- * Graph.java
-   *  
- * Author: 罗磊，luoleicn@gmail.com
-   * 
+ * Graph.java 
+ * 
+ * Author : 罗磊，luoleicn@gmail.com
+ * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
-   * 
+ * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
-   * 
+ * 
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-   * 
- * Last Update:2011-7-14
-   * 
-   */
+ * 
+ * Last Update:Jul 14, 2011
+ * 
+ */
 package mlfs.crf.graph;
 
 import java.util.List;
@@ -45,6 +45,8 @@ public class Graph {
 	/** 归一化因子. */
 	private double m_Z;
 	
+	/** 缓存图对象. */
+	private static Graph m_graph;
 	/**
 	 * 建立图结构.
 	 *
@@ -55,90 +57,100 @@ public class Graph {
 	 */
 	public static Graph buildGraph(CRFEvent event,  int numTag, double[] parameter)
 	{
+		if (m_graph == null)
+		{
+			m_graph = new Graph();
+			m_graph.m_numTag = numTag;
+		}
+		
 		GraphCacher cacher = GraphCacher.getInstance();
 		FeatureCacher features = FeatureCacher.getInstance();
 		
-		Graph graph = new Graph();
+		int seqLen = event.labels.length;
+		if (m_graph.m_seqLen<seqLen)
+		{
+			m_graph.m_seqLen = seqLen;
+			m_graph.m_nodes = new Node[seqLen][numTag];
+		}
 		
-		graph.m_seqLen = event.labels.length;
-		graph.m_numTag = numTag;
-		graph.m_nodes = new Node[graph.m_seqLen][graph.m_numTag];
 		int fpos = event.FEATURE_CACHE_POS;
-		for (int i=0; i<graph.m_seqLen; i++)
+		for (int i=0; i<seqLen; i++)
 		{
 			List<Integer> feats = features.getFeats(fpos++);
-			for (int tag=0; tag<graph.m_numTag; tag++)
+			for (int tag=0; tag<numTag; tag++)
 			{
 				Node node = cacher.getNode();
 				node.reInit(i, tag, event.labels[i]);
-//				node.calcFeatures(event, i, featureHandler);//unigram
 				node.setFeatures(feats);
-				node.calLogProb(parameter, graph.m_numTag);
+				node.calLogProb(parameter, numTag);
 				
-				graph.m_nodes[i][tag] = node;
+				m_graph.m_nodes[i][tag] = node;
 			}
 		}
 				
-		for (int i=1; i<graph.m_seqLen; i++)
+		for (int i=1; i<seqLen; i++)
 		{
-			for (int preTag=0; preTag<graph.m_numTag; preTag++)
+			for (int preTag=0; preTag<numTag; preTag++)
 			{
 				List<Integer> feats = features.getFeats(fpos++);
-				for (int tag=0; tag<graph.m_numTag; tag++)
+				for (int tag=0; tag<numTag; tag++)
 				{
 					Edge edge = cacher.getEdge();
-					edge.reInit(graph.m_nodes[i-1][preTag], graph.m_nodes[i][tag]);
-//					edge.calFeature(event, i, featureHandler);
+					edge.reInit(m_graph.m_nodes[i-1][preTag], m_graph.m_nodes[i][tag]);
 					edge.setFeatures(feats);
-					edge.calcLogProbs(parameter, graph.m_numTag);
+					edge.calcLogProbs(parameter, numTag);
 					
-					graph.m_nodes[i-1][preTag].addRightEdge(edge);//add right edge
-					graph.m_nodes[i][tag].addLeftEdge(edge);// add left edge
+					m_graph.m_nodes[i-1][preTag].addRightEdge(edge);//add right edge
+					m_graph.m_nodes[i][tag].addLeftEdge(edge);// add left edge
 				}
 			}
 		}
 		
-		return graph;
+		return m_graph;
 	}
 	
 	/**
 	 * 前向后向算法.
+	 * 
+	 * 只所以需要传参，而不是使用m_seqLen和m_numTag是因为m_seqLen和m_numTag数值是
+	 * 缓存的而不是真实event的数值
+	 *
+	 * @param seqLen 序列长度
+	 * @param numTag tag总数
 	 */
-	public void forwardBackword()
+	public void forwardBackword(int seqLen, int numTag)
 	{
-		for (int time=0; time<m_seqLen; time++)
-			for (int tag=0; tag<m_numTag; tag++)
-			{
+		for (int time=0; time<seqLen; time++)
+			for (int tag=0; tag<numTag; tag++)
 				m_nodes[time][tag].calcAlpha();
-//				System.out.println("m_nodes[" + time + "][" + tag + "] alpha : "+m_nodes[time][tag].getAlpha());
-			}
 		
-		for (int time=m_seqLen-1; time>=0; time--)
-			for (int tag=0; tag<m_numTag; tag++)
-			{
+		for (int time=seqLen-1; time>=0; time--)
+			for (int tag=0; tag<numTag; tag++)
 				m_nodes[time][tag].calcBeta();
-//				System.out.println("m_nodes[" + time + "][" + tag + "] beta" + m_nodes[time][tag].getBeta());
-			}
 		
 		m_Z = 0.0;
-		for (int tag=0; tag<m_numTag; tag++)
+		for (int tag=0; tag<numTag; tag++)
 			m_Z = Utils.logSum(m_Z, m_nodes[0][tag].getBeta(), tag==0);
-//		System.out.println("Z = " + m_Z);
 	}
 	
 	
 	/**
 	 * 梯度.这个方法，首先计算模型期望，然后用模型期望减去观测期望，结果即为似然估计的导数的相反数，
 	 * 最后返回似然估计的相反数
+	 * 
+	 * 只所以需要传参，而不是使用m_seqLen和m_numTag是因为m_seqLen和m_numTag数值是
+	 * 缓存的而不是真实event的数值
 	 *
 	 * @param expectation 期望数组
+	 * @param seqLen 序列长度
+	 * @param numTag tag总数
 	 * @return 似然估计的相反数
 	 */
-	public double gradient(double[][] expectation)
+	public double gradient(double[][] expectation, int seqLen, int numTag)
 	{
-		for (int i=0; i<m_seqLen; i++)
+		for (int i=0; i<seqLen; i++)
 		{
-			for (int j=0; j<m_numTag; j++)
+			for (int j=0; j<numTag; j++)
 			{
 				Node node = m_nodes[i][j];
 				//unigram
@@ -161,7 +173,7 @@ public class Graph {
 		
 		double res = 0.0;
 		int preAns = -1;
-		for (int i=0; i<m_seqLen; i++)
+		for (int i=0; i<seqLen; i++)
 		{
 			int ans = m_nodes[i][0].m_ansTag;
 			res += m_nodes[i][ans].getUnigramProb();
@@ -183,17 +195,6 @@ public class Graph {
 			preAns = ans;
 		}
 		
-//		System.out.print("Expectation : ");
-//		for (int i=0; i<1; i++)
-//		{
-//			for (int j=0; j<m_numTag; j++)
-//			{
-//				System.out.print(expectation[i][j] + " ");
-//			}
-//		}
-//		System.out.println();
-		
-//		System.out.println("s = " + res);
 		return m_Z - res;//loglikelihood的相反数
 	}
 	

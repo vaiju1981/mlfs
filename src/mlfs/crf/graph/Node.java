@@ -31,8 +31,8 @@ import mlfs.util.Utils;
  */
 public class Node {
 
-	/** 在序列中的偏移量. */
-	private int  m_pos;
+	//未保存序列的x，因为不需要
+	
 	/** tag. */
 	public int m_y;
 	
@@ -66,7 +66,6 @@ public class Node {
 	 */
 	public Node(int pos, int tag, int ansTag)
 	{
-		m_pos = pos;
 		m_y = tag;
 		m_ansTag = ansTag;
 		
@@ -76,7 +75,6 @@ public class Node {
 	
 	public void reInit(int pos, int tag, int ansTag)
 	{
-		m_pos = pos;
 		m_y = tag;
 		m_ansTag = ansTag;
 		
@@ -117,19 +115,7 @@ public class Node {
 			m_unigramProb += parameter[f*tagSize + m_y];
 		}
 	}
-//	
-//	/**
-//	 * 计算满足的unigram特征
-//	 *
-//	 * @param e crf序列
-//	 * @param idx 偏移量
-//	 * @param handler 特征处理类
-//	 */
-//	public void calcFeatures(CRFEvent e, int idx, Features handler)
-//	{
-//		m_features = handler.getUnigramFeat(e, idx);
-//	}
-//	
+
 	public void setFeatures(List<Integer> lst)
 	{
 		m_features = lst;

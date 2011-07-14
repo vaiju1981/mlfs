@@ -21,8 +21,6 @@
  */
 package mlfs.crf.model;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -56,10 +54,13 @@ public class CRFModel {
 	/** The m_num tag. */
 	private int m_numTag;
 	
+	/** 谓词总数. */
 	private int m_numPred;
 	
+	/** 模板文件路径. */
 	private String m_templateFilePath;
 	
+	/** 模板文件内容. */
 	private List<String> m_templates;
 	
 	private CRFModel(){}
@@ -67,10 +68,10 @@ public class CRFModel {
 	/**
 	 * Instantiates a new cRF model.
 	 *
-	 * @param templateFilePath the template file path
+	 * @param templateFilePath 模板文件路径
 	 * @param tagMap the tag map
-	 * @param parameters the parameters
-	 * @param numPred the num pred
+	 * @param parameters 参数
+	 * @param numPred 谓词总数
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public CRFModel(String templateFilePath, Map<String, Integer> tagMap, double[] parameters, int numPred) throws IOException
@@ -88,6 +89,12 @@ public class CRFModel {
 		m_templateFilePath = templateFilePath;
 	}
 	
+	/**
+	 * 保存模型
+	 *
+	 * @param path 路径
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	public void save(String path) throws IOException
 	{
 		PrintWriter out = new PrintWriter(new FileWriter(path, true));
@@ -112,6 +119,13 @@ public class CRFModel {
 		out.close();
 	}
 	
+	/**
+	 * 从文件加载模型
+	 *
+	 * @param path 模型路径
+	 * @return crf模型对象
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	public static CRFModel load(String path) throws IOException
 	{
 		CRFModel model = new CRFModel();
@@ -174,8 +188,8 @@ public class CRFModel {
 	 * 预测一个给定一个CRFEvent的状态序列
 	 * 使用维特比解码算法
 	 *
-	 * @param e the e
-	 * @return the list
+	 * @param e 待标注crfevent
+	 * @return 标注结果序列
 	 */
 	public List<String> label(CRFEvent e)
 	{
