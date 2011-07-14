@@ -79,6 +79,7 @@ public class CRFLBFGSTrainer extends CRFTrainer{
 		lbfgs = null;
 		
 		m_modelExpectation = null;
+		logger.info("Finish Training...");
 		return new CRFModel(m_templateFilePath, m_tagMap, m_parameters, m_numFeat);
 	}
 	
