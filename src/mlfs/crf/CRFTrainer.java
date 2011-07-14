@@ -83,7 +83,7 @@ public abstract class CRFTrainer {
 		m_tagMap = featHandler.getTagMap();
 		m_numTag = m_tagMap.size();
 		
-		logger.info("There are " + m_numFeat + " features in training file");
+		logger.info("There are " + m_numFeat + " predicates in training file");
 		
 	}
 	
