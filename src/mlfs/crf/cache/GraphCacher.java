@@ -19,10 +19,13 @@
  * Last Update:Jul 14, 2011
  * 
  */
-package mlfs.crf.graph;
+package mlfs.crf.cache;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import mlfs.crf.graph.Edge;
+import mlfs.crf.graph.Node;
 
 /**
  * The Class GraphCacher.
@@ -84,4 +87,5 @@ public class GraphCacher {
 		Edge e = m_edges.get(m_edgePos++);
 		return e;
 	}
+	
 }

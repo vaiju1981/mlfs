@@ -119,19 +119,23 @@ public class Node {
 			m_unigramProb += parameter[f*tagSize + m_y];
 		}
 	}
-	
-	/**
-	 * 计算满足的unigram特征
-	 *
-	 * @param e crf序列
-	 * @param idx 偏移量
-	 * @param handler 特征处理类
-	 */
-	public void calcFeatures(CRFEvent e, int idx, Features handler)
+//	
+//	/**
+//	 * 计算满足的unigram特征
+//	 *
+//	 * @param e crf序列
+//	 * @param idx 偏移量
+//	 * @param handler 特征处理类
+//	 */
+//	public void calcFeatures(CRFEvent e, int idx, Features handler)
+//	{
+//		m_features = handler.getUnigramFeat(e, idx);
+//	}
+//	
+	public void setFeatures(List<Integer> lst)
 	{
-		m_features = handler.getUnigramFeat(e, idx);
+		m_features = lst;
 	}
-	
 	/**
 	 * 前向算法
 	 */

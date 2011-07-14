@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import mlfs.crf.cache.FeatureCacher;
 import mlfs.crf.model.CRFEvent;
 
 /**
@@ -78,11 +79,17 @@ public class Features {
 	{
 		logger.info("statistic featues in training file...");
 		int numTag = m_tagMap.size();
+		
+		FeatureCacher cacher = FeatureCacher.getInstance();
 		for (CRFEvent event : events)
 		{
+			event.FEATURE_CACHE_POS = cacher.size();
+			
 			int len = event.inputs.length;
-			for (int i=0; i<len; i++)
+			List<Integer> feats = null;
+			for (int i=0; i<len; i++)//unigram
 			{
+				feats = new ArrayList<Integer>();
 				List<String> unigramPred = m_template.getUnigramPred(event, i);
 				for (String predicate : unigramPred)
 				{
@@ -93,26 +100,29 @@ public class Features {
 						m_featIdMap.put(unigramFeat, m_featCounter);
 						m_featCounter++;
 					}
+					feats.add(m_featIdMap.get(unigramFeat));
 				}
-				
-				if (i != 0)
+				cacher.add(feats);
+			}
+			for (int i=1; i<len; i++)//bigram
+			{
+				List<String> bigramPred = m_template.getBigramPred(event, i);
+				for (int preTag=0; preTag<numTag; preTag++)
 				{
-					List<String> bigramPred = m_template.getBigramPred(event, i);
+					feats = new ArrayList<Integer>();
 					for (String predicate : bigramPred)
 					{
+						String bigramFeat = predicate + FEATURE_JOIN +preTag;
 						
-						for (int preTag=0; preTag<numTag; preTag++)
+						if (!m_featIdMap.containsKey(bigramFeat))
 						{
-							String bigramFeat = predicate + FEATURE_JOIN +preTag;
-							
-							if (!m_featIdMap.containsKey(bigramFeat))
-							{
-								m_featIdMap.put(bigramFeat, m_featCounter);
-								m_featCounter++;
-							}
+							m_featIdMap.put(bigramFeat, m_featCounter);
+							m_featCounter++;
 						}
+						feats.add(m_featIdMap.get(bigramFeat));
 					}
-				}//i != 0
+					cacher.add(feats);
+				}
 			}
 		}
 	}
@@ -137,15 +147,15 @@ public class Features {
 		return m_tagMap;
 	}
 	
-	/**
-	 * Gets the template file.
-	 *
-	 * @return the template file
-	 */
-	public String getTemplateFilePath()
-	{
-		return m_template.getPath();
-	}
+//	/**
+//	 * Gets the template file.
+//	 *
+//	 * @return the template file
+//	 */
+//	public String getTemplateFilePath()
+//	{
+//		return m_template.getPath();
+//	}
 	
 	/**
 	 * Gets the feat map.
@@ -157,56 +167,56 @@ public class Features {
 		return m_featIdMap;
 	}
 
-	/**
-	 * Gets the unigram feat.
-	 *
-	 * @param event the event
-	 * @param idx the idx
-	 * @return the unigram feat
-	 */
-	public List<Integer> getUnigramFeat(CRFEvent event, int idx)
-	{
-		if (idx<0 || idx>=event.inputs.length)
-			throw new IllegalArgumentException("idx 必须在 0～" +(event.inputs.length-1) + "之间");
-		
-		List<Integer> feats = new ArrayList<Integer>();
-		List<String> unigramPred = m_template.getUnigramPred(event, idx);
-		
-		for (String predicate : unigramPred)
-		{
-			String unigramFeat = predicate;
-			
-			if (m_featIdMap.containsKey(unigramFeat))
-				feats.add(m_featIdMap.get(unigramFeat));
-		}	
-		return feats;
-	}
-	
-	/**
-	 * Gets the bigram feat.
-	 *
-	 * @param bigramPred the bigram pred
-	 * @param preTag the pre tag
-	 * @return the bigram feat
-	 */
-	public List<Integer> getBigramFeat( List<String> bigramPred, int preTag)
-	{
-		List<Integer> feats = new ArrayList<Integer>();
-		for (String predicate : bigramPred)
-		{
-			String bigramFeat = predicate + FEATURE_JOIN +preTag;
-			
-			if (m_featIdMap.containsKey(bigramFeat))
-				feats.add(m_featIdMap.get(bigramFeat));
-		}
-		return feats;
-	}
-	
-	public List<Integer>getBigramFeat(CRFEvent event, int preTag, int idx)
-	{
-		if (idx<=0||idx>=event.inputs.length)
-			throw new IllegalArgumentException("idx必须在1～"+(event.inputs.length-1)+"之间");
-		List<String> preds = m_template.getBigramPred(event, idx);
-		return getBigramFeat(preds, preTag);
-	}
+//	/**
+//	 * Gets the unigram feat.
+//	 *
+//	 * @param event the event
+//	 * @param idx the idx
+//	 * @return the unigram feat
+//	 */
+//	public List<Integer> getUnigramFeat(CRFEvent event, int idx)
+//	{
+//		if (idx<0 || idx>=event.inputs.length)
+//			throw new IllegalArgumentException("idx 必须在 0～" +(event.inputs.length-1) + "之间");
+//		
+//		List<Integer> feats = new ArrayList<Integer>();
+//		List<String> unigramPred = m_template.getUnigramPred(event, idx);
+//		
+//		for (String predicate : unigramPred)
+//		{
+//			String unigramFeat = predicate;
+//			
+//			if (m_featIdMap.containsKey(unigramFeat))
+//				feats.add(m_featIdMap.get(unigramFeat));
+//		}	
+//		return feats;
+//	}
+//	
+//	/**
+//	 * Gets the bigram feat.
+//	 *
+//	 * @param bigramPred the bigram pred
+//	 * @param preTag the pre tag
+//	 * @return the bigram feat
+//	 */
+//	public List<Integer> getBigramFeat( List<String> bigramPred, int preTag)
+//	{
+//		List<Integer> feats = new ArrayList<Integer>();
+//		for (String predicate : bigramPred)
+//		{
+//			String bigramFeat = predicate + FEATURE_JOIN +preTag;
+//			
+//			if (m_featIdMap.containsKey(bigramFeat))
+//				feats.add(m_featIdMap.get(bigramFeat));
+//		}
+//		return feats;
+//	}
+//	
+//	public List<Integer>getBigramFeat(CRFEvent event, int preTag, int idx)
+//	{
+//		if (idx<=0||idx>=event.inputs.length)
+//			throw new IllegalArgumentException("idx必须在1～"+(event.inputs.length-1)+"之间");
+//		List<String> preds = m_template.getBigramPred(event, idx);
+//		return getBigramFeat(preds, preTag);
+//	}
 }

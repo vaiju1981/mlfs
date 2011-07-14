@@ -74,15 +74,20 @@ public class Edge {
 		}
 	}
 	
-	/**
-	 * 计算这条边满足的特征
-	 */
-	public void calFeature(CRFEvent e, int idx, Features handler)
+//	/**
+//	 * 计算这条边满足的特征
+//	 */
+//	public void calFeature(CRFEvent e, int idx, Features handler)
+//	{
+//		if (idx == 0)
+//			m_features = null;
+//		else
+//			m_features = handler.getBigramFeat(e, m_lnode.m_y, idx);
+//	}
+	
+	public void setFeatures(List<Integer> lst)
 	{
-		if (idx == 0)
-			m_features = null;
-		else
-			m_features = handler.getBigramFeat(e, m_lnode.m_y, idx);
+		m_features = lst;
 	}
 	
 	/**

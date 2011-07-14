@@ -24,6 +24,8 @@ package mlfs.crf.graph;
 import java.util.List;
 
 import mlfs.crf.Features;
+import mlfs.crf.cache.FeatureCacher;
+import mlfs.crf.cache.GraphCacher;
 import mlfs.crf.model.CRFEvent;
 import mlfs.util.Utils;
 
@@ -55,35 +57,46 @@ public class Graph {
 	public static Graph buildGraph(CRFEvent event, Features featureHandler, double[] parameter)
 	{
 		GraphCacher cacher = GraphCacher.getInstance();
+		FeatureCacher features = FeatureCacher.getInstance();
+		
 		Graph graph = new Graph();
 		
 		graph.m_seqLen = event.inputs.length;
 		graph.m_numTag = featureHandler.getTagMap().size();
 		graph.m_nodes = new Node[graph.m_seqLen][graph.m_numTag];
-		
+		System.out.println("Size = " + features.size());
+		int fpos = event.FEATURE_CACHE_POS;
 		for (int i=0; i<graph.m_seqLen; i++)
 		{
+			List<Integer> feats = features.getFeats(fpos++);
 			for (int tag=0; tag<graph.m_numTag; tag++)
 			{
 				Node node = cacher.getNode();
 				node.reInit(i, tag, event.labels[i]);
-				node.calcFeatures(event, i, featureHandler);//unigram
+//				node.calcFeatures(event, i, featureHandler);//unigram
+				node.setFeatures(feats);
 				node.calLogProb(parameter, graph.m_numTag);
 				
-				if (i != 0)//bigram
-				{
-					for (int preTag=0; preTag<graph.m_numTag; preTag++)
-					{
-						Edge edge = cacher.getEdge();
-						edge.reInit(graph.m_nodes[i-1][preTag], node);
-						edge.calFeature(event, i, featureHandler);
-						edge.calcLogProbs(parameter, graph.m_numTag);
-						
-						graph.m_nodes[i-1][preTag].addRightEdge(edge);//add right edge
-						node.addLeftEdge(edge);// add left edge
-					}
-				}
 				graph.m_nodes[i][tag] = node;
+			}
+		}
+				
+		for (int i=1; i<graph.m_seqLen; i++)
+		{
+			for (int preTag=0; preTag<graph.m_numTag; preTag++)
+			{
+				List<Integer> feats = features.getFeats(fpos++);
+				for (int tag=0; tag<graph.m_numTag; tag++)
+				{
+					Edge edge = cacher.getEdge();
+					edge.reInit(graph.m_nodes[i-1][preTag], graph.m_nodes[i][tag]);
+//					edge.calFeature(event, i, featureHandler);
+					edge.setFeatures(feats);
+					edge.calcLogProbs(parameter, graph.m_numTag);
+					
+					graph.m_nodes[i-1][preTag].addRightEdge(edge);//add right edge
+					graph.m_nodes[i][tag].addLeftEdge(edge);// add left edge
+				}
 			}
 		}
 		
