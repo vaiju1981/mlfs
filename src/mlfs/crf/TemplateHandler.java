@@ -155,11 +155,11 @@ public class TemplateHandler {
 					throw new ArrayIndexOutOfBoundsException("col = " + col);
 				
 				if (row <0)
-					sb.append(rc.row).append('_').append(rc.col).append(START).append(PREDICATE_JOIN);
+					sb.append(rc.row).append(PREDICATE_JOIN).append(rc.col).append(PREDICATE_JOIN).append(START).append(row).append(PREDICATE_JOIN);
 				else if (row > event.charFeat.size()-1)
-					sb.append(rc.row).append('_').append(rc.col).append(END).append(PREDICATE_JOIN);
+					sb.append(rc.row).append(PREDICATE_JOIN).append(rc.col).append(PREDICATE_JOIN).append(END).append(row).append(PREDICATE_JOIN);
 				else
-					sb.append(rc.row).append('_').append(rc.col).append(event.charFeat.get(row).get(col)).append(PREDICATE_JOIN);
+					sb.append(rc.row).append(PREDICATE_JOIN).append(rc.col).append(PREDICATE_JOIN).append(event.charFeat.get(row).get(col)).append(PREDICATE_JOIN);
 			}
 			predicates.add(sb.toString());
 		}
