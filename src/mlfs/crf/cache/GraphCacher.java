@@ -44,7 +44,11 @@ public class GraphCacher {
 	
 	private int m_nodePos;
 	
+	private int m_nodeSize;
+	
 	private int m_edgePos;
+	
+	private int m_edgeSize;
 	
 	private static GraphCacher m_cacher;
 	
@@ -54,6 +58,7 @@ public class GraphCacher {
 		this.m_edges = new ArrayList<Edge>();
 		this.m_nodePos = 0;
 		this.m_edgePos = 0;
+		this.m_nodeSize = this.m_edgeSize = 0;
 	}
 	
 	public static GraphCacher getInstance()
@@ -72,8 +77,11 @@ public class GraphCacher {
 
 	public Node getNode()
 	{
-		if (m_nodePos == m_nodes.size()) 
+		if (m_nodePos == m_nodeSize) 
+		{
 			m_nodes.add(new Node(-1, -1, -1));
+			m_nodeSize++;
+		}
 		
 		Node node = m_nodes.get(m_nodePos++);
 		return node;
@@ -81,8 +89,11 @@ public class GraphCacher {
 
 	public Edge getEdge()
 	{
-		if (m_edgePos == m_edges.size())
+		if (m_edgePos == m_edgeSize)
+		{
 			m_edges.add(new Edge(null, null));
+			m_edgeSize++;
+		}
 		
 		Edge e = m_edges.get(m_edgePos++);
 		return e;
