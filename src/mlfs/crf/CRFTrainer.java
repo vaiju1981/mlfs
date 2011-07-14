@@ -119,7 +119,7 @@ public abstract class CRFTrainer {
 		double negLoglikelihood = 0.0;
 		for (CRFEvent event : m_events)
 		{
-			Graph graph = Graph.buildGraph(event, m_featHandler, solutions);
+			Graph graph = Graph.buildGraph(event, m_numTag, solutions);
 			graph.forwardBackword();
 			negLoglikelihood += graph.gradient(m_modelExpectation);
 		}

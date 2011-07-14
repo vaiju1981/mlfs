@@ -54,7 +54,7 @@ public class Graph {
 	 * @param parameter 参数
 	 * @return 图对象
 	 */
-	public static Graph buildGraph(CRFEvent event, Features featureHandler, double[] parameter)
+	public static Graph buildGraph(CRFEvent event,  int numTag, double[] parameter)
 	{
 		GraphCacher cacher = GraphCacher.getInstance();
 		FeatureCacher features = FeatureCacher.getInstance();
@@ -62,7 +62,7 @@ public class Graph {
 		Graph graph = new Graph();
 		
 		graph.m_seqLen = event.inputs.length;
-		graph.m_numTag = featureHandler.getTagMap().size();
+		graph.m_numTag = numTag;
 		graph.m_nodes = new Node[graph.m_seqLen][graph.m_numTag];
 		System.out.println("Size = " + features.size());
 		int fpos = event.FEATURE_CACHE_POS;
