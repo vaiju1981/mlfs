@@ -87,7 +87,7 @@ public class CRFModel {
 	 */
 	public List<String> label(CRFEvent e)
 	{
-		Graph graph = Graph.buildGraph(e, m_featureHandler, m_parameters);
+		Graph graph = Graph.buildGraph(e, m_numTag, m_parameters);
 		List<String> labels = new ArrayList<String>();
 		
 		int len = e.inputs.length;

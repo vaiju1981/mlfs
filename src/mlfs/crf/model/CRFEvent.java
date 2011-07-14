@@ -43,7 +43,7 @@ public class CRFEvent {
 	/** 每一个输入对应一个特征序列,由用户自己提供的特征文件读取出来. */
 	public List<List<String>> charFeat;
 	
-	public int FEATURE_CACHE_POS;
+	public int FEATURE_CACHE_POS = -1;
 	/**
 	 * Instantiates a new cRF event.
 	 *
