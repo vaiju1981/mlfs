@@ -38,6 +38,8 @@ public class CRFLBFGSTrainer extends CRFTrainer{
 	/** The logger. */
 	private static Logger logger = Logger.getLogger(CRFLBFGSTrainer.class.getName());
 	
+	private String m_templateFilePath;
+	
 	/**
 	 * Instantiates a new cRFLBFGS trainer.
 	 *
@@ -48,6 +50,8 @@ public class CRFLBFGSTrainer extends CRFTrainer{
 	public CRFLBFGSTrainer(List<CRFEvent> events, Features featHandler)
 			throws IOException {
 		super(events, featHandler);
+		m_templateFilePath = featHandler.getTemplateFilePath();
+		featHandler = null;
 	}
 
 	/* (non-Javadoc)
@@ -75,7 +79,7 @@ public class CRFLBFGSTrainer extends CRFTrainer{
 		lbfgs = null;
 		
 		m_modelExpectation = null;
-		return new CRFModel(m_tagMap, m_parameters);
+		return new CRFModel(m_templateFilePath, m_tagMap, m_parameters, m_numFeat);
 	}
 	
 	/**

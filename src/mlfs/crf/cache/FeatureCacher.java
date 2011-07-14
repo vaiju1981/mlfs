@@ -36,4 +36,9 @@ public class FeatureCacher {
 	{
 		return m_featureCache.size();
 	}
+	
+	public void clear()
+	{
+		m_featureCache.clear();
+	}
 }

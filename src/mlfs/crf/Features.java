@@ -154,6 +154,7 @@ public class Features {
 		{
 			writer.println(fid.getKey() + " " + fid.getValue());
 		}
+		writer.println();//隔开fidmap和剩余内容
 			
 		m_featIdMap = null;
 		writer.close();
@@ -179,15 +180,15 @@ public class Features {
 		return m_tagMap;
 	}
 	
-//	/**
-//	 * Gets the template file.
-//	 *
-//	 * @return the template file
-//	 */
-//	public String getTemplateFilePath()
-//	{
-//		return m_template.getPath();
-//	}
+	/**
+	 * Gets the template file.
+	 *
+	 * @return the template file
+	 */
+	public String getTemplateFilePath()
+	{
+		return m_template.getPath();
+	}
 	
 //	/**
 //	 * Gets the feat map.

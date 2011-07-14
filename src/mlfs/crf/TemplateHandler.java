@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Set;
 import mlfs.crf.model.CRFEvent;
 import mlfs.crf.model.RowColumn;
+import mlfs.util.Utils;
 
 /**
  * 处理用户手工编写的特征模板.
@@ -44,7 +45,7 @@ public class TemplateHandler {
 	private static String END = "END";
 	
 	/** 特征模板文件按的路径. */
-	private String m_path;
+	private final String m_path;
 	
 	/** unigram特征模板. */
 	private List<List<RowColumn>> m_unigramPredList;
@@ -67,20 +68,27 @@ public class TemplateHandler {
 		this.m_unigramPredList = new ArrayList<List<RowColumn>>();
 		this.m_bigramPredList = new ArrayList<List<RowColumn>>();
 		
-		read();
+		List<String> lines = Utils.getAllLines(path);
+		read(lines);
 	}
 	
+	public TemplateHandler(List<String> lines)
+	{
+		this.m_path = null;
+		this.m_unigramPredList = new ArrayList<List<RowColumn>>();
+		this.m_bigramPredList = new ArrayList<List<RowColumn>>();
+		
+		read(lines);
+	}
 	/**
 	 * 读取特征文件.
 	 *
-	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	private void read() throws IOException
+	private void read(List<String> lines)
 	{
 		Set<String> predSet = new HashSet<String>();
-		BufferedReader reader = new BufferedReader(new FileReader(new File(m_path)));
-		String line = null;
-		while ((line = reader.readLine()) != null)
+		
+		for (String line : lines)
 		{
 			if (line.trim().length() == 0)//blank line
 				continue;
@@ -126,8 +134,8 @@ public class TemplateHandler {
 			
 		}
 		
-		reader.close();
 	}
+	
 	
 	/**
 	 * 根据给定的谓词模板，event以及event的中的坐标抽取谓词

@@ -63,7 +63,6 @@ public abstract class CRFTrainer {
 	/** tag总数. */
 	protected int m_numTag;
 	
-	
 	/**
 	 * Instantiates a new cRF trainer.
 	 *
@@ -83,8 +82,6 @@ public abstract class CRFTrainer {
 		m_numTag = m_tagMap.size();
 		
 		logger.info("There are " + m_numFeat + " predicates in training file");
-		
-		featHandler = null;
 	}
 	
 	/**
