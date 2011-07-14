@@ -153,7 +153,6 @@ public class Features {
 		for (Entry<String, Integer> fid : m_featIdMap.entrySet())
 		{
 			writer.println(fid.getKey() + " " + fid.getValue());
-			System.out.println(" f = " + fid.getKey());
 		}
 			
 		m_featIdMap = null;
