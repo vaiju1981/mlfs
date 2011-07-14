@@ -83,13 +83,13 @@ public class CorpusReader {
 				int sz = sentence.size();
 				if (sz == 0)
 					continue;
-				String[] inputs = new String[sz];
+//				String[] inputs = new String[sz];
 				int[] labels = new int[sz];
-				CRFEvent event = new CRFEvent(inputs,labels);
+				CRFEvent event = new CRFEvent(labels);
 				for (int i=0; i<sz; i++)
 				{
 					String[] vec = sentence.get(i).split("\\s+");
-					event.inputs[i] = vec[0];
+//					event.inputs[i] = vec[0];
 					Integer label = m_tagIdMap.get(vec[vec.length-1]);
 					if (label == null)
 					{
@@ -113,12 +113,12 @@ public class CorpusReader {
 		int sz = sentence.size();
 		if (sz != 0)
 		{
-			String[] inputs = new String[sz];
+//			String[] inputs = new String[sz];
 			int[] labels = new int[sz];
-			CRFEvent event = new CRFEvent(inputs, labels);
+			CRFEvent event = new CRFEvent(labels);
 			for (int i = 0; i < sz; i++) {
 				String[] vec = sentence.get(i).split("\\s+");
-				event.inputs[i] = vec[0];
+//				event.inputs[i] = vec[0];
 				Integer label = m_tagIdMap.get(vec[vec.length - 1]);
 				if (label == null) {
 					label = m_tagCounter;

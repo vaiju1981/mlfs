@@ -21,11 +21,7 @@
  */
 package mlfs.crf;
 
-import java.io.BufferedWriter;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -100,7 +96,7 @@ public class Features {
 		{
 			event.FEATURE_CACHE_POS = cacher.size();
 			
-			int len = event.inputs.length;
+			int len = event.labels.length;
 			List<Integer> feats = null;
 			for (int i=0; i<len; i++)//unigram
 			{
@@ -160,7 +156,6 @@ public class Features {
 		}
 			
 		m_featIdMap = null;
-		dict = null;
 		writer.close();
 	}
 	

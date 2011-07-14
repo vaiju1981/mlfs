@@ -22,9 +22,7 @@
 package mlfs.crf.model;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * The Class CRFEvent.
@@ -34,8 +32,8 @@ public class CRFEvent {
 //	/** 特征key是观测值，values是观测值对应的一系列特征，这个变量是static的，由所有CRFEvent共享. */
 //	public final static Map<String, List<String>> CHAR_FEAT = new HashMap<String, List<String>>();
 	
-	/** 输入. */
-	public String[] inputs;
+////	/** 输入. */输入已经包含在charFeat中的元素中
+//	private String[] inputs;
 	
 	/** 标签. */
 	public int[] labels;
@@ -47,16 +45,12 @@ public class CRFEvent {
 	/**
 	 * Instantiates a new cRF event.
 	 *
-	 * @param inputs the inputs
 	 * @param labels the labels
 	 */
-	public CRFEvent(String[] inputs, int[] labels)
+	public CRFEvent(int[] labels)
 	{
-		if (labels.length != inputs.length)
-			throw new IllegalArgumentException("labels.length != inputs.length");
-		
 		this.labels = labels;
-		this.inputs = inputs;
+//		this.inputs = inputs;
 		charFeat = new ArrayList<List<String>>();
 	}
 	

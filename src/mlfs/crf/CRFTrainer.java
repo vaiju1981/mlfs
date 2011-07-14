@@ -39,8 +39,8 @@ public abstract class CRFTrainer {
 	/** The logger. */
 	private Logger logger = Logger.getLogger(CRFTrainer.class.getName());
 	
-	/** 特征处理类. */
-	protected Features m_featHandler;
+//	/** 特征处理类. */
+//	protected Features m_featHandler;
 	
 	/** 特征总数. */
 	protected int m_numFeat;
@@ -74,17 +74,17 @@ public abstract class CRFTrainer {
 	public CRFTrainer(List<CRFEvent> events, Features featHandler) throws IOException
 	{
 		m_numFeat = featHandler.getFeatNum();
-		m_featHandler = featHandler;
+//		m_featHandler = featHandler;
 		
 		m_numEvents = events.size();
 		m_events = events;
-		
 	
 		m_tagMap = featHandler.getTagMap();
 		m_numTag = m_tagMap.size();
 		
 		logger.info("There are " + m_numFeat + " predicates in training file");
 		
+		featHandler = null;
 	}
 	
 	/**

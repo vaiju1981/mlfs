@@ -24,7 +24,7 @@ public class Utils {
 		char[] chars = line.toCharArray();
 		String[] inputs = new String[chars.length];
 		int[] labels = new int[chars.length];
-		CRFEvent e = new CRFEvent(inputs, labels);
+		CRFEvent e = new CRFEvent(labels);
 		
 		List<String> feats  = null;
 		for (int i=0; i<chars.length; i++)

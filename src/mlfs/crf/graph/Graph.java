@@ -60,7 +60,7 @@ public class Graph {
 		
 		Graph graph = new Graph();
 		
-		graph.m_seqLen = event.inputs.length;
+		graph.m_seqLen = event.labels.length;
 		graph.m_numTag = numTag;
 		graph.m_nodes = new Node[graph.m_seqLen][graph.m_numTag];
 		int fpos = event.FEATURE_CACHE_POS;

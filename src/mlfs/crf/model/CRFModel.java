@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import mlfs.crf.Features;
 import mlfs.crf.graph.Edge;
 import mlfs.crf.graph.Graph;
 import mlfs.crf.graph.Node;
@@ -90,7 +89,7 @@ public class CRFModel {
 		Graph graph = Graph.buildGraph(e, m_numTag, m_parameters);
 		List<String> labels = new ArrayList<String>();
 		
-		int len = e.inputs.length;
+		int len = e.labels.length;
 		
 		double[][] delta = new double[m_numTag][len];
 		int[][] phi = new int[m_numTag][len];
