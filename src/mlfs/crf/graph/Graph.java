@@ -64,7 +64,6 @@ public class Graph {
 		graph.m_seqLen = event.inputs.length;
 		graph.m_numTag = numTag;
 		graph.m_nodes = new Node[graph.m_seqLen][graph.m_numTag];
-		System.out.println("Size = " + features.size());
 		int fpos = event.FEATURE_CACHE_POS;
 		for (int i=0; i<graph.m_seqLen; i++)
 		{
