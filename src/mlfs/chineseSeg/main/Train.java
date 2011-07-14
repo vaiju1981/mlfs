@@ -27,9 +27,10 @@ public class Train {
 		TemplateHandler template = new TemplateHandler("chinese_segment_feature_template.txt");
 		
 		CorpusReader corpus = new CorpusReader("CHINESE_SEGMENT_CRF.train");
+		String crfmodel = "CRF.model";
 		List<CRFEvent> events = corpus.getAllEvents();
 		
-		Features featuresHandle = new Features(template, corpus.getTagMap(), events);
+		Features featuresHandle = new Features(template, corpus.getTagMap(), events, crfmodel);
 		
 		CRFLBFGSTrainer trainer = new CRFLBFGSTrainer(events, featuresHandle) ;
 		

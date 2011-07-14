@@ -47,7 +47,7 @@ public class CRFModel {
 	/** 参数. */
 	private double[] m_parameters;
 	
-	private Features m_featureHandler;
+//	private Features m_featureHandler;
 	
 	/** The m_num tag. */
 	private int m_numTag;
@@ -62,9 +62,9 @@ public class CRFModel {
 	 * @param featureHandler the feature handler
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public CRFModel(Map<String, List<String>> charfeats, Map<String, Integer> tagMap, double[] parameters, Features featureHandler) throws IOException
+	public CRFModel(Map<String, Integer> tagMap, double[] parameters/*, Features featureHandler*/) throws IOException
 	{
-		CHAR_FEAT = charfeats;
+//		CHAR_FEAT = charfeats;
 		m_numTag = tagMap.size();
 		
 		m_parameters = parameters;
@@ -74,7 +74,7 @@ public class CRFModel {
 		{
 			m_int2tag.put(tagint.getValue(), tagint.getKey());
 		}
-		m_featureHandler = featureHandler;
+//		m_featureHandler = featureHandler;
 	}
 	
 	

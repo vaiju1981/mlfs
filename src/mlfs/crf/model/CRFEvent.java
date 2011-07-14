@@ -31,8 +31,8 @@ import java.util.Map;
  */
 public class CRFEvent {
 
-	/** 特征key是观测值，values是观测值对应的一系列特征，这个变量是static的，由所有CRFEvent共享. */
-	public final static Map<String, List<String>> CHAR_FEAT = new HashMap<String, List<String>>();
+//	/** 特征key是观测值，values是观测值对应的一系列特征，这个变量是static的，由所有CRFEvent共享. */
+//	public final static Map<String, List<String>> CHAR_FEAT = new HashMap<String, List<String>>();
 	
 	/** 输入. */
 	public String[] inputs;
@@ -68,14 +68,12 @@ public class CRFEvent {
 	public void addCharFeat(String[] feats)
 	{
 		String input = feats[0];
-		if (!CHAR_FEAT.containsKey(input))
-		{
-			List<String> featsLst = new ArrayList<String>();
-			for (String s : feats)
-				featsLst.add(s);
-			CHAR_FEAT.put(input, featsLst);
-		}
-		charFeat.add(CHAR_FEAT.get(input));
+		
+		List<String> featsLst = new ArrayList<String>();
+		for (String s : feats)
+			featsLst.add(s);
+		
+		charFeat.add(featsLst);
 	}
 	
 }

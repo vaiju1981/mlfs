@@ -75,7 +75,7 @@ public class CRFLBFGSTrainer extends CRFTrainer{
 		lbfgs = null;
 		
 		m_modelExpectation = null;
-		return new CRFModel(CRFEvent.CHAR_FEAT,  m_tagMap, m_parameters, m_featHandler);
+		return new CRFModel(m_tagMap, m_parameters);
 	}
 	
 	/**

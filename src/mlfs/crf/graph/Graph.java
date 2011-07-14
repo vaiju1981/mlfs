@@ -23,7 +23,6 @@ package mlfs.crf.graph;
 
 import java.util.List;
 
-import mlfs.crf.Features;
 import mlfs.crf.cache.FeatureCacher;
 import mlfs.crf.cache.GraphCacher;
 import mlfs.crf.model.CRFEvent;

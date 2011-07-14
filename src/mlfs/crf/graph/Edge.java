@@ -23,9 +23,6 @@ package mlfs.crf.graph;
 
 import java.util.List;
 
-import mlfs.crf.Features;
-import mlfs.crf.model.CRFEvent;
-
 /**
  * 连接两个Node的边
  */

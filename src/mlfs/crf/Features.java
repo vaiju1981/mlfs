@@ -21,10 +21,20 @@
  */
 package mlfs.crf;
 
+import java.io.BufferedWriter;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import mlfs.crf.cache.FeatureCacher;
@@ -58,15 +68,16 @@ public class Features {
 	 *
 	 * @param templateHandler the template handler
 	 * @param tagMap the tag map
+	 * @throws IOException 
 	 */
-	public Features(TemplateHandler templateHandler, Map<String, Integer> tagMap, List<CRFEvent> events)
+	public Features(TemplateHandler templateHandler, Map<String, Integer> tagMap, List<CRFEvent> events, String modelPath) throws IOException
 	{
 		m_template = templateHandler;
 		m_featCounter = 0;
 		m_featIdMap = new HashMap<String, Integer>();
 		m_tagMap = tagMap;
 		
-		statisticFeat(events);
+		statisticFeat(events, modelPath);
 		logger.info("Feature Number : " + m_featCounter*m_tagMap.size());
 	}
 	
@@ -74,10 +85,14 @@ public class Features {
 	 * 统计训练语料中出现过的所有特征集合
 	 *
 	 * @param events the events
+	 * @throws IOException 
 	 */
-	public void statisticFeat(List<CRFEvent> events)
+	public void statisticFeat(List<CRFEvent> events, String modelPath) throws IOException
 	{
 		logger.info("statistic featues in training file...");
+		PrintWriter writer = new PrintWriter(new File(modelPath));
+			
+		Set<String> dict = new HashSet<String>();
 		int numTag = m_tagMap.size();
 		
 		FeatureCacher cacher = FeatureCacher.getInstance();
@@ -124,7 +139,29 @@ public class Features {
 					cacher.add(feats);
 				}
 			}
+			//持久化
+			for (List<String> chars : event.charFeat)
+			{
+				if (!dict.contains(chars.get(0)))
+				{
+					dict.add(chars.get(0));
+					StringBuilder sb = new StringBuilder();
+					for (String s : chars)
+						sb.append(s).append(' ');
+					writer.println(sb.toString());
+				}
+			}
+			event.charFeat = null;
 		}
+		writer.println();//隔开charFeat和fidmap
+		for (Entry<String, Integer> fid : m_featIdMap.entrySet())
+		{
+			writer.println(fid.getKey() + " " + fid.getValue());
+		}
+			
+		m_featIdMap = null;
+		dict = null;
+		writer.close();
 	}
 	
 	/**
@@ -157,15 +194,15 @@ public class Features {
 //		return m_template.getPath();
 //	}
 	
-	/**
-	 * Gets the feat map.
-	 *
-	 * @return the feat map
-	 */
-	public Map<String, Integer> getFeatMap()
-	{
-		return m_featIdMap;
-	}
+//	/**
+//	 * Gets the feat map.
+//	 *
+//	 * @return the feat map
+//	 */
+//	public Map<String, Integer> getFeatMap()
+//	{
+//		return m_featIdMap;
+//	}
 
 //	/**
 //	 * Gets the unigram feat.

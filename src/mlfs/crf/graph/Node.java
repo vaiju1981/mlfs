@@ -24,8 +24,6 @@ package mlfs.crf.graph;
 import java.util.ArrayList;
 import java.util.List;
 
-import mlfs.crf.Features;
-import mlfs.crf.model.CRFEvent;
 import mlfs.util.Utils;
 
 /**
