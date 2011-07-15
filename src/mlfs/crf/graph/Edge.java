@@ -65,9 +65,10 @@ public class Edge {
 	public void calcLogProbs(double[] parameters, int tagSize)
 	{
 		m_bigramProb = 0.0;
-		for (int f : m_features)
+		int sz = m_features.size();
+		for (int i=0; i<sz; i++)
 		{
-			m_bigramProb += parameters[f*tagSize + m_rnode.m_y];
+			m_bigramProb += parameters[m_features.get(i)*tagSize + m_rnode.m_y];
 		}
 	}
 	
@@ -85,9 +86,10 @@ public class Edge {
 	public void calcModelExpectation(double[][] expectation, double Z)
 	{
 		double prob = m_lnode.getAlpha() + m_bigramProb + m_rnode.getBeta() - Z;
-		for (int f : m_features)
+		int sz = m_features.size();
+		for (int i=0; i<sz; i++)
 		{
-			expectation[f][m_rnode.m_y] += Math.exp(prob);
+			expectation[m_features.get(i)][m_rnode.m_y] += Math.exp(prob);
 		}
 	}
 	

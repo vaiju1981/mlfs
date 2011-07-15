@@ -110,9 +110,10 @@ public class Node {
 	public void calLogProb(double[] parameter, int tagSize)
 	{
 		m_unigramProb = 0.0;
-		for (int f : m_features)
+		int sz = m_features.size();
+		for (int i=0; i<sz; i++)
 		{
-			m_unigramProb += parameter[f*tagSize + m_y];
+			m_unigramProb += parameter[m_features.get(i)*tagSize + m_y];
 		}
 	}
 
@@ -127,8 +128,10 @@ public class Node {
 	{
 		m_alpha = 0.0;
 		boolean flg =  true;
-		for (Edge edge : m_ledge)
+		int sz = m_ledge.size();
+		for (int i=0; i<sz; i++)
 		{
+			Edge edge = m_ledge.get(i);
 			m_alpha = Utils.logSum(m_alpha, edge.m_lnode.m_alpha + edge.getBigramProb(), flg);
 			flg = false;
 		}
@@ -142,8 +145,10 @@ public class Node {
 	{
 		m_beta = 0.0;
 		boolean flg = true;
-		for (Edge edge : m_redge)
+		int sz = m_redge.size();
+		for (int i=0; i<sz; i++)
 		{
+			Edge edge = m_redge.get(i);
 			m_beta = Utils.logSum(m_beta, edge.getBigramProb() + edge.m_rnode.m_beta, flg);
 			flg = false;
 		}

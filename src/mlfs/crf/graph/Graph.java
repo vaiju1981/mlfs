@@ -156,17 +156,21 @@ public class Graph {
 				//unigram
 				double p = Math.exp(node.getAlpha() + node.getBeta() - node.getUnigramProb() - m_Z);
 				List<Integer> feats = node.getFeatures();
-				for (int f : feats)
-					expectation[f][j] += p;
+				int sz = feats.size();
+				for (int f=0; f<sz; f++)
+					expectation[feats.get(f)][j] += p;
 				
 				//bigram
 				List<Edge> leftEdges = node.m_ledge;
-				for (Edge e : leftEdges)
+				sz = leftEdges.size();
+				for (int le=0; le<sz; le++)
 				{
+					Edge e = leftEdges.get(le);
 					p = Math.exp(e.m_lnode.getAlpha() + e.getBigramProb() + e.m_rnode.getBeta() - m_Z);
 					List<Integer> bFeats = e.getFeatures();
-					for (int f : bFeats)
-						expectation[f][j] += p;
+					int bfsize = bFeats.size();
+					for (int f=0; f<bfsize; f++)
+						expectation[bFeats.get(f)][j] += p;
 				}
 			}
 		}
