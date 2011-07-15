@@ -220,7 +220,7 @@ public class CRFModel {
 					}
 				}
 				phi[j][i] = lastIdx;
-				delta[j][i] = lastIdx==-1 ? 0.0 : max;
+				delta[j][i] = lastIdx==-1 ? node.getUnigramProb() : max;
 			}
 		}
 		
