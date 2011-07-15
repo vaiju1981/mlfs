@@ -40,40 +40,39 @@ public class Test {
 		CRFModel model = CRFModel.load("CRF.model");
 		System.out.println("Tagging");
 		Parser parser = new Parser(model);
-//		String sentence = "2001年1月1日零时，随着新世纪钟声的响起，北京中华世纪坛礼花齐放，万民欢腾。";
-		String sentence = "中国人";
-		CRFEvent e = parser.parseEvent(sentence);
-		List<String> labels = model.label(e);
-		for (int i=0; i<labels.size(); i++)
-			System.out.println(sentence.charAt(i)+"\t"+labels.get(i));
+		String sentence = "2001年1月1日零时，随着新世纪钟声的响起，北京中华世纪坛礼花齐放，万民欢腾。";
+//		CRFEvent e = parser.parseEvent(sentence);
+//		List<String> labels = model.label(e);
+//		for (int i=0; i<labels.size(); i++)
+//			System.out.println(sentence.charAt(i)+"\t"+labels.get(i));
 		
-//		BufferedReader in = new BufferedReader(new FileReader(new File("icwb2-data/testing/pku_test.utf8")));
-//		PrintWriter out = new PrintWriter(new File("out"));
-//		while ((sentence = in.readLine()) != null)
-//		{
-//			if (sentence.trim().length() == 0)
-//				continue;
-//			CRFEvent e = parser.parseEvent(sentence);
-//			
-//			List<String> labels = model.label(e);
-//			
-//			StringBuilder sb = new StringBuilder();
-//			for (int i=0; i<labels.size(); i++)
-//			{
-//				System.out.println(sentence.charAt(i)+"\t"+labels.get(i));
-//				if (labels.get(i).equals("B"))
-//					sb.append(sentence.charAt(i));
-//				else if (labels.get(i).equals("M"))
-//					sb.append(sentence.charAt(i));
-//				else if (labels.get(i).equals("E"))
-//					sb.append(sentence.charAt(i)).append(' ');
-//				else if (labels.get(i).equals("S"))
-//					sb.append(sentence.charAt(i)).append(' ');
-//			}
-//			
-//			out.println(sb.toString());
-//		}
-//		in.close();
-//		out.close();
+		BufferedReader in = new BufferedReader(new FileReader(new File("corpus/chineseSegment/pku_test.utf8")));
+		PrintWriter out = new PrintWriter(new File("out"));
+		while ((sentence = in.readLine()) != null)
+		{
+			if (sentence.trim().length() == 0)
+				continue;
+			CRFEvent e = parser.parseEvent(sentence);
+			
+			List<String> labels = model.label(e);
+			
+			StringBuilder sb = new StringBuilder();
+			for (int i=0; i<labels.size(); i++)
+			{
+				System.out.println(sentence.charAt(i)+"\t"+labels.get(i));
+				if (labels.get(i).equals("B"))
+					sb.append(sentence.charAt(i));
+				else if (labels.get(i).equals("M"))
+					sb.append(sentence.charAt(i));
+				else if (labels.get(i).equals("E"))
+					sb.append(sentence.charAt(i)).append(' ');
+				else if (labels.get(i).equals("S"))
+					sb.append(sentence.charAt(i)).append(' ');
+			}
+			
+			out.println(sb.toString());
+		}
+		in.close();
+		out.close();
 	}
 }

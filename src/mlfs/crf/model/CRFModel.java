@@ -221,7 +221,6 @@ public class CRFModel {
 				}
 				phi[j][i] = lastIdx;
 				delta[j][i] = lastIdx==-1 ? node.getUnigramProb() : max;
-				System.out.println("i = " + i + " j = " + j + " delta = " + delta[j][i]);
 			}
 		}
 		
