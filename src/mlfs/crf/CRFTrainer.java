@@ -110,8 +110,9 @@ public abstract class CRFTrainer {
 				m_modelExpectation[i][j] = 0.0;
 		
 		double negLoglikelihood = 0.0;
-		for (CRFEvent event : m_events)
+		for (int i=0; i<m_numEvents; i++)
 		{
+			CRFEvent event = m_events.get(i);
 			int len = event.labels.length;
 			Graph graph = Graph.buildGraph(event, m_numTag, solutions);
 			graph.forwardBackword(len, m_numTag);

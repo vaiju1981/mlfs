@@ -182,18 +182,22 @@ public class Graph {
 			int ans = m_nodes[i][0].m_ansTag;
 			res += m_nodes[i][ans].getUnigramProb();
 			List<Integer> unigramFeat = m_nodes[i][ans].getFeatures();
-			for (int f : unigramFeat)
-				expectation[f][ans]--;
+			int sz = unigramFeat.size();
+			for (int f=0; f<sz; f++)
+				expectation[unigramFeat.get(f)][ans]--;
 			
 			List<Edge> leftEdges = m_nodes[i][ans].m_ledge;
-			for (Edge e : leftEdges)
+			sz = leftEdges.size();
+			for (int le=0; le<sz; le++)
 			{
+				Edge e = leftEdges.get(le);
 				if (e.m_lnode.m_y == preAns)
 				{
 					res += e.getBigramProb();
 					List<Integer> bigramFeat = e.getFeatures();
-					for (int f : bigramFeat)
-						expectation[f][ans]--;
+					int bsize = bigramFeat.size();
+					for (int f=0; f<bsize; f++)
+						expectation[bigramFeat.get(f)][ans]--;
 				}
 			}
 			preAns = ans;
