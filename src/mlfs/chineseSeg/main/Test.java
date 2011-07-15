@@ -40,7 +40,8 @@ public class Test {
 		CRFModel model = CRFModel.load("CRF.model");
 		System.out.println("Tagging");
 		Parser parser = new Parser(model);
-		String sentence = "2001年1月1日零时，随着新世纪钟声的响起，北京中华世纪坛礼花齐放，万民欢腾。";
+//		String sentence = "2001年1月1日零时，随着新世纪钟声的响起，北京中华世纪坛礼花齐放，万民欢腾。";
+		String sentence = "中国人";
 		CRFEvent e = parser.parseEvent(sentence);
 		List<String> labels = model.label(e);
 		for (int i=0; i<labels.size(); i++)

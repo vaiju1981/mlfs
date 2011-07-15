@@ -205,9 +205,9 @@ public class CRFModel {
 		for (int i=0; i<len; i++)
 		{
 			lastIdx = -1;
-			double max = Double.NEGATIVE_INFINITY;
 			for (int j=0; j<m_numTag; j++)
 			{
+				double max = Double.NEGATIVE_INFINITY;
 				Node node = nodes[i][j];
 				List<Edge> leftNodes = node.m_ledge;
 				for (Edge edge : leftNodes)
@@ -221,6 +221,7 @@ public class CRFModel {
 				}
 				phi[j][i] = lastIdx;
 				delta[j][i] = lastIdx==-1 ? node.getUnigramProb() : max;
+				System.out.println("i = " + i + " j = " + j + " delta = " + delta[j][i]);
 			}
 		}
 		

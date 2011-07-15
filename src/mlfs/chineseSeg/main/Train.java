@@ -17,9 +17,9 @@ public class Train {
 	public static void main(String[] args) throws IOException
 	{
 		//从train语料中统计特征，这里注释掉是因为已经统计过了，并生成CHINESE_SEGMENT_CRF.train，没必要反复统计
-		CorpusProcessing processing = new CorpusProcessing("icwb2-data/training/pku_training.utf8");
-		processing.buildTrainFile();
-		processing = null;
+//		CorpusProcessing processing = new CorpusProcessing("icwb2-data/training/pku_training.utf8");
+//		processing.buildTrainFile();
+//		processing = null;
 		
 		TemplateHandler template = new TemplateHandler("chinese_segment_feature_template.txt");
 		
