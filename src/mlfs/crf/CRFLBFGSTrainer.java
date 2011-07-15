@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
 
+import mlfs.crf.cache.FeatureCacher;
+import mlfs.crf.cache.GraphCacher;
 import mlfs.crf.model.CRFEvent;
 import mlfs.crf.model.CRFModel;
 import mlfs.numerical.AbstractLBFGS;
@@ -76,10 +78,15 @@ public class CRFLBFGSTrainer extends CRFTrainer{
 		CRF_LBFGS lbfgs = new CRF_LBFGS(m_numFeat*m_numTag, 5, numIter);
 		m_parameters = new double[m_numFeat*m_numTag];
 		lbfgs.getSolution(m_parameters);
-		lbfgs = null;
 		
-		m_modelExpectation = null;
 		logger.info("Finish Training...");
+		lbfgs = null;
+		m_modelExpectation = null;
+		FeatureCacher fcacher = FeatureCacher.getInstance();
+		fcacher.clear();
+		GraphCacher gcacher = GraphCacher.getInstance();
+		gcacher.clear();
+		
 		return new CRFModel(m_templateFilePath, m_tagMap, m_parameters, m_numFeat);
 	}
 	

@@ -98,11 +98,10 @@ public class CRFModel {
 	public void save(String path) throws IOException
 	{
 		PrintWriter out = new PrintWriter(new FileWriter(path, true));
-		StringBuilder sb = new StringBuilder();
-		sb.append(m_numPred).append(' ').append(m_numTag).append(' ');
+		out.write(m_numPred + " " + m_numTag + " ");
 		for (double v : m_parameters)
-			sb.append(v).append(' ');
-		out.println(sb.toString());
+			out.write(v+" ");
+		out.println();
 		
 		for (Entry<Integer, String> tid : m_int2tag.entrySet())
 			out.println(tid.getKey() + " " + tid.getValue());
