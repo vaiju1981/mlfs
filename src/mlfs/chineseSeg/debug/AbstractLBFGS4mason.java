@@ -119,8 +119,6 @@ public abstract class AbstractLBFGS4mason {
 			}
 
 			icall += 1;
-			System.out.println("dev result : ");
-			System.out.println("test result : ");
 		}
 		while ( iflag[0] != 0 && icall <= m_numIter );
 		return f;

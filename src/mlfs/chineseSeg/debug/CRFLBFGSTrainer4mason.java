@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import mlfs.crf.CRFLBFGSTrainer;
+import mlfs.crf.CRFTrainer;
 import mlfs.crf.Features;
 import mlfs.crf.cache.FeatureCacher;
 import mlfs.crf.cache.GraphCacher;
@@ -36,13 +37,14 @@ import mlfs.crf.model.CRFModel;
  * The Class CRFLBFGSTrainer.
  * LBFGS求解CRF参数
  */
-public class CRFLBFGSTrainer4mason extends CRFLBFGSTrainer{
+public class CRFLBFGSTrainer4mason extends CRFTrainer{
 	
 	/** The logger. */
 	private static Logger logger = Logger.getLogger(CRFLBFGSTrainer4mason.class.getName());
 	
 	private List<CRFEvent> m_devEvents;
 	private List<CRFEvent> m_testEvents;
+	private String m_tempaltePath;
 	
 	/**
 	 * Instantiates a new cRFLBFGS trainer.
@@ -53,9 +55,10 @@ public class CRFLBFGSTrainer4mason extends CRFLBFGSTrainer{
 	 * @param featHandler the feat handler
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public CRFLBFGSTrainer4mason(List<CRFEvent> events, List<CRFEvent> devEvents, List<CRFEvent> testEvent, Features featHandler)
+	public CRFLBFGSTrainer4mason(List<CRFEvent> events, List<CRFEvent> devEvents, List<CRFEvent> testEvent, Features4mason featHandler)
 			throws IOException {
-		super(events, featHandler);
+		super(events, featHandler.getFeatNum(), featHandler.getTagMap());
+		m_tempaltePath = featHandler.getTemplateFilePath();
 		m_devEvents = devEvents;
 		m_testEvents = testEvent;
 	}
@@ -80,7 +83,7 @@ public class CRFLBFGSTrainer4mason extends CRFLBFGSTrainer{
 		GraphCacher gcacher = GraphCacher.getInstance();
 		gcacher.clear();
 		
-		return new CRFModel(m_templateFilePath, m_tagMap, m_parameters, m_numFeat);
+		return new CRFModel(m_tempaltePath, m_tagMap, m_parameters, m_numFeat);
 	}
 	
 	/**
@@ -125,6 +128,11 @@ public class CRFLBFGSTrainer4mason extends CRFLBFGSTrainer{
 					g[i*m_numTag+j] = m_modelExpectation[i][j]+ x[i*m_numTag+j];
 		}
 		
+	}
+
+	@Override
+	public CRFModel train() throws IOException {
+		return train(500);
 	}
 }
 

@@ -114,14 +114,14 @@ public class DebugHelper {
 		return stack;
 	}
 	
-	public static double evaluate(List<CRFEvent> events, int numTag, double[] parameters)
+	public static double evaluate(List<CRFEvent> events, int numTag, double[] x)
 	{
 		int t = 0, f = 0;
 		int sz = events.size();
 		for (int i=0; i<sz; i++)
 		{
 			CRFEvent e = events.get(i);
-			int[] prediction = label(e, numTag, parameters);
+			int[] prediction = label(e, numTag, x);
 			int seqLen = prediction.length;
 			for (int j=0; j<seqLen; j++)
 			{

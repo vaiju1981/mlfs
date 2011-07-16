@@ -35,7 +35,7 @@ public class Debug {
 	
 	public static void main(String[] args) throws IOException {
 		
-		if (args.length != 4)
+		if (args.length != 5)
 		{
 			System.out.println("java -jar crf_debug.jar templatefile trainfile devfile testfile numIter");
 			System.exit(-1);
@@ -51,16 +51,16 @@ public class Debug {
 		TemplateHandler template = new TemplateHandler(templatePath);
 		CorpusReader corpus = new CorpusReader(trainPath);
 		List<CRFEvent> events = corpus.getAllEvents();
+		Features4mason featuresHandle = new Features4mason(template, corpus.getTagMap(), events, crfmodel);
+		Map<String, Integer> featIdMap = featuresHandle.statisticFeat(events, crfmodel);
 		List<CRFEvent> devEvents = corpus.getAllEvents(devPath);
 		List<CRFEvent> testEvents = corpus.getAllEvents(testPath);
-		Features featuresHandle = new Features(template, corpus.getTagMap(), events, crfmodel);
 		
-		Map<String, Integer> tagMap = featuresHandle.getTagMap();
-		int numTag = tagMap.size();
+		int numTag = featuresHandle.getTagMap().size();
 		for (CRFEvent e : devEvents)
-			DebugHelper.saveToCache(e, numTag, template, tagMap);
+			DebugHelper.saveToCache(e, numTag, template, featIdMap);
 		for (CRFEvent e : testEvents)
-			DebugHelper.saveToCache(e, numTag, template, tagMap);
+			DebugHelper.saveToCache(e, numTag, template, featIdMap);
 		
 		CRFLBFGSTrainer4mason trainer = new CRFLBFGSTrainer4mason(events, devEvents, testEvents, featuresHandle) ;
 		CRFModel model = trainer.train(numIter);

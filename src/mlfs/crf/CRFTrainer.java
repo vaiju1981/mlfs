@@ -80,6 +80,19 @@ public abstract class CRFTrainer {
 		logger.info("There are " + m_numFeat + " predicates in training file");
 	}
 	
+	public CRFTrainer(List<CRFEvent> events, int numFeat, Map<String, Integer> tagMap)
+	{
+		m_numFeat = numFeat;
+		
+		m_numEvents = events.size();
+		m_events = events;
+	
+		m_tagMap = tagMap;
+		m_numTag = m_tagMap.size();
+		
+		logger.info("There are " + m_numFeat + " predicates in training file");
+	}
+	
 	/**
 	 * Train.使用默认的迭代求参次数，训练crf模型
 	 *
