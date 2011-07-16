@@ -1,5 +1,5 @@
 /*
- * CRFLBFGSTrainer.java 
+ * CRFLBFGSTrainer4mason.java 
  * 
  * Author : 罗磊，luoleicn@gmail.com
  * 
@@ -16,63 +16,56 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
- * Last Update:Jul 4, 2011
+ * Last Update:Jul 16, 2011
  * 
  */
-package mlfs.crf;
+package mlfs.chineseSeg.debug;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
 
+import mlfs.crf.CRFLBFGSTrainer;
+import mlfs.crf.Features;
 import mlfs.crf.cache.FeatureCacher;
 import mlfs.crf.cache.GraphCacher;
 import mlfs.crf.model.CRFEvent;
 import mlfs.crf.model.CRFModel;
-import mlfs.numerical.AbstractLBFGS;
 
 /**
  * The Class CRFLBFGSTrainer.
  * LBFGS求解CRF参数
  */
-public class CRFLBFGSTrainer extends CRFTrainer{
+public class CRFLBFGSTrainer4mason extends CRFLBFGSTrainer{
 	
 	/** The logger. */
-	private static Logger logger = Logger.getLogger(CRFLBFGSTrainer.class.getName());
+	private static Logger logger = Logger.getLogger(CRFLBFGSTrainer4mason.class.getName());
 	
-	protected String m_templateFilePath;
+	private List<CRFEvent> m_devEvents;
+	private List<CRFEvent> m_testEvents;
 	
 	/**
 	 * Instantiates a new cRFLBFGS trainer.
 	 *
 	 * @param events the events
+	 * @param devEvents the dev events
+	 * @param testEvent the test event
 	 * @param featHandler the feat handler
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public CRFLBFGSTrainer(List<CRFEvent> events, Features featHandler)
+	public CRFLBFGSTrainer4mason(List<CRFEvent> events, List<CRFEvent> devEvents, List<CRFEvent> testEvent, Features featHandler)
 			throws IOException {
 		super(events, featHandler);
-		m_templateFilePath = featHandler.getTemplateFilePath();
-		featHandler = null;
+		m_devEvents = devEvents;
+		m_testEvents = testEvent;
 	}
 
-	/* (non-Javadoc)
-	 * @see mlfs.crf.CRFTrainer#train()
-	 */
-	@Override
-	public CRFModel train() throws IOException
-	{
-		return train(600);
-	}
-	
 	/* (non-Javadoc)
 	 * @see mlfs.crf.CRFTrainer#train(int)
 	 */
 	@Override
 	public CRFModel train(int numIter) throws IOException
 	{
-		logger.info("Calc oberservation expectation...");
-		
 		logger.info("L-BFGS...");
 		m_modelExpectation = new double[m_numFeat][m_numTag];
 		CRF_LBFGS lbfgs = new CRF_LBFGS(m_numFeat*m_numTag, 5, numIter);
@@ -93,7 +86,7 @@ public class CRFLBFGSTrainer extends CRFTrainer{
 	/**
 	 * The Class CRF_LBFGS.
 	 */
-	private class CRF_LBFGS extends AbstractLBFGS
+	private class CRF_LBFGS extends AbstractLBFGS4mason
 	{
 		
 		/**
@@ -113,6 +106,7 @@ public class CRFLBFGSTrainer extends CRFTrainer{
 		 */
 		@Override
 		public double calFunctionVal(double[] x) {
+			System.out.println("Evaluate : dev " + DebugHelper.evaluate(m_devEvents, m_numTag, x) + " test " + DebugHelper.evaluate(m_testEvents, m_numTag, x));
 			double f  = calcModelExpectation(x);
 			
 			for (double parameter : x)
@@ -129,7 +123,6 @@ public class CRFLBFGSTrainer extends CRFTrainer{
 			for (int i=0; i<m_numFeat; i++)
 				for (int j=0; j<m_numTag; j++)
 					g[i*m_numTag+j] = m_modelExpectation[i][j]+ x[i*m_numTag+j];
-//					g[i*m_numTag+j] = m_modelExpectation[i][j]/m_numEvents + x[i*m_numTag+j];
 		}
 		
 	}

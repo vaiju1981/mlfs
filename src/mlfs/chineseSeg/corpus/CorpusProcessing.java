@@ -104,12 +104,6 @@ public class CorpusProcessing {
 	
 	private Map<Character, Integer> m_singleCounter;
 	
-	private Map<Character, Integer> m_begLongest;
-	
-	private Map<Character, Integer> m_middleLongest;
-	
-	private Map<Character, Integer> m_endLongest;
-	
 	/** 统计字符出现的次数. */
 	private Map<Character, Integer> m_longword;
 	
@@ -128,10 +122,6 @@ public class CorpusProcessing {
 		m_midCounter = new HashMap<Character, Integer>();
 		m_endCounter = new HashMap<Character, Integer>();
 		m_singleCounter = new HashMap<Character, Integer>();
-		
-		m_begLongest = new HashMap<Character, Integer>();
-		m_middleLongest = new HashMap<Character, Integer>();
-		m_endLongest = new HashMap<Character, Integer>();
 		
 		m_longword = new HashMap<Character, Integer>();
 		m_longwordLetters = new HashSet<Character>();
@@ -176,17 +166,6 @@ public class CorpusProcessing {
 							m_begCounter.put(key, 1);
 						else
 							m_begCounter.put(key, begTimes+1);
-						
-						if (m_begLongest.containsKey(key))
-						{
-							int longest = m_begLongest.get(key);
-							if (len > longest)
-								m_begLongest.put(key, len);
-						}
-						else
-						{
-							m_begLongest.put(key, len);
-						}
 					}
 					else if (i == len-1)//end
 					{
@@ -195,17 +174,6 @@ public class CorpusProcessing {
 							m_endCounter.put(key, 1);
 						else
 							m_endCounter.put(key, endTimes+1);
-						
-						if (m_endLongest.containsKey(key))
-						{
-							int longest = m_endLongest.get(key);
-							if (len > longest)
-								m_endLongest.put(key, len);
-						}
-						else
-						{
-							m_endLongest.put(key, len);
-						}
 					}
 					else//middle
 					{
@@ -214,17 +182,6 @@ public class CorpusProcessing {
 							m_midCounter.put(key, 1);
 						else
 							m_midCounter.put(key, midTimes+1);
-						
-						if (m_middleLongest.containsKey(key))
-						{
-							int longest = m_middleLongest.get(key);
-							if (len > longest)
-								m_middleLongest.put(key, len);
-						}
-						else
-						{
-								m_middleLongest.put(key, len);
-						}
 					}
 					
 					if (len >= 6)
@@ -292,7 +249,7 @@ public class CorpusProcessing {
 				for (int i=0; i<charSeq.length; i++)
 				{
 					char key = charSeq[i];
-					int[] features = new int[4];
+					int feature;
 					char tag;
 					if (charSeq.length == 1)
 						tag = 'S';
@@ -320,43 +277,27 @@ public class CorpusProcessing {
 					freq = begfreq + midfreq + endfreq + singlefreq;
 					
 					if (m_resource.isDigit(key))
-						features[0] = CHARACTER_FEATURE.DIGIT.getValue();
+						feature = CHARACTER_FEATURE.DIGIT.getValue();
 					else if (m_resource.isChineseDigit(key))
-						features[0] = CHARACTER_FEATURE.CHINESE_DIGIT.getValue();
+						feature = CHARACTER_FEATURE.CHINESE_DIGIT.getValue();
 					else if (m_resource.isLetter(key))
-						features[0] = CHARACTER_FEATURE.LETTER.getValue();
+						feature = CHARACTER_FEATURE.LETTER.getValue();
 					else if (m_resource.isPunctuation(key))
-						features[0] = CHARACTER_FEATURE.PUNCTUATION.getValue();
+						feature = CHARACTER_FEATURE.PUNCTUATION.getValue();
 					else if (1.0*begfreq/freq >= FREQ_THESHOLE)
-						features[0] = CHARACTER_FEATURE.PREFIX.getValue();
+						feature = CHARACTER_FEATURE.PREFIX.getValue();
 					else if (1.0*endfreq/freq >= FREQ_THESHOLE)
-						features[0] = CHARACTER_FEATURE.SUFFIX.getValue();
+						feature = CHARACTER_FEATURE.SUFFIX.getValue();
 					else if (1.0*singlefreq/freq >= FREQ_THESHOLE)
-						features[0] = CHARACTER_FEATURE.SINGLE.getValue();
+						feature = CHARACTER_FEATURE.SINGLE.getValue();
 					else if (m_longwordLetters.contains(key))
-						features[0] = CHARACTER_FEATURE.LONGEST.getValue();
+						feature = CHARACTER_FEATURE.LONGEST.getValue();
 					else
-						features[0] = CHARACTER_FEATURE.OTHERS.getValue();
+						feature = CHARACTER_FEATURE.OTHERS.getValue();
 						
-					if (m_begLongest.containsKey(key))
-						features[1] = m_begLongest.get(key);
-					else
-						features[1] = 0;
-					
-					if (m_middleLongest.containsKey(key))
-						features[2] = m_middleLongest.get(key);
-					else
-						features[2] = 0;
-					
-					if (m_endLongest.containsKey(key))
-						features[3] = m_endLongest.get(key);
-					else
-						features[3] = 0;
-					
 					StringBuilder data = new StringBuilder();
 					data.append(key).append('\t');
-					for (int f=0; f<features.length; f++)
-						data.append(features[f]).append("\t");
+					data.append(feature).append("\t");
 					data.append(tag);
 					writer.println(data.toString());
 				}
