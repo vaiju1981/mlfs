@@ -111,9 +111,6 @@ public class Parser {
 				List<String> common = new ArrayList<String>();
 				common.add(inputs[i]);
 				common.add(type+"");
-				common.add("0");
-				common.add("0");
-				common.add("0");
 				common.add("?");
 				
 				e.charFeat.add(common);
