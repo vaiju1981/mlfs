@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
- * Last Update:Jul 3, 2011
+ * Last Update:Jul 16, 2011
  * 
  */
 package mlfs.crf.corpus;
@@ -71,9 +71,20 @@ public class CorpusReader {
 	 */
 	public List<CRFEvent> getAllEvents()throws IOException
 	{
+		return getAllEvents(m_path);
+	}
+	
+	/**
+	 * Gets the all events.
+	 *
+	 * @return the all events
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public List<CRFEvent> getAllEvents(String path)throws IOException
+	{
 		logger.info("Loading all events...");
 		List<CRFEvent> events = new ArrayList<CRFEvent>();
-		BufferedReader reader = new BufferedReader(new FileReader(new File(m_path)));
+		BufferedReader reader = new BufferedReader(new FileReader(new File(path)));
 		List<String> sentence = new ArrayList<String>();
 		String line = null;
 		while ((line = reader.readLine()) != null)
