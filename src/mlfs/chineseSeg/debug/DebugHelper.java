@@ -133,4 +133,72 @@ public class DebugHelper {
 		}
 		return 1.0*t/(t+f);
 	}
+	
+	public static double evaluateSeg(List<CRFEvent> events, int numTag, double[] x, Map<Integer, String> tagMap)
+	{
+		//int t = 0, f = 0;
+		int word_gold = 0, word_pred = 0, word_reco = 0;
+		int sz = events.size();
+		for (int i=0; i<sz; i++)
+		{
+			CRFEvent e = events.get(i);
+			int[] prediction = label(e, numTag, x);
+			int seqLen = prediction.length;
+			String[] predictBMES = new String[seqLen];//预测的BMES序列
+			String[] ansBMES = new String[seqLen];//答案的BMES序列
+			for (int j=0; j<seqLen; j++)
+			{
+				predictBMES[j] = tagMap.get(prediction[j]);
+				ansBMES[j] = tagMap.get(e.labels[j]);
+			}
+			
+			List<String> wordseg_gold = segCount(ansBMES);
+			List<String> wordseg_pred = segCount(predictBMES);
+			word_gold += wordseg_gold.size();
+			word_pred += wordseg_pred.size();
+			word_reco += segReco(wordseg_gold, wordseg_pred);
+			
+		}
+		
+		return 2.0*word_reco/(word_gold+word_pred);
+	}
+	
+	public static List<String> segCount(String[] seqBMES)
+	{
+		List<String> segResult = new ArrayList<String>();
+		int beginPosition = 0;
+		for(int i =1; i < seqBMES.length; i++)
+		{
+			String seqTag = seqBMES[i];
+			if(seqTag.startsWith("B") || seqTag.startsWith("S"))
+			{
+				String oneWord = String.format("%d_%d", beginPosition, i-1);
+				segResult.add(oneWord);
+				beginPosition = i;
+			}
+		}
+		
+		segResult.add(String.format("%d_%d", beginPosition, seqBMES.length-1));	
+		
+		return segResult;
+	}
+	
+	public static int segReco(List<String> wordSeg1, List<String> wordSeg2)
+	{
+		int count = 0;
+		for(String word1 :wordSeg1)
+		{
+			for(String word2 : wordSeg2)
+			{
+				if(word1.equals(word2))
+				{
+					count++;
+				}
+			}
+		}
+		return count;
+	}
+	
+	
+	
 }

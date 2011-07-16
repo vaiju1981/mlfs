@@ -22,7 +22,10 @@
 package mlfs.chineseSeg.debug;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import mlfs.crf.CRFLBFGSTrainer;
@@ -46,6 +49,8 @@ public class CRFLBFGSTrainer4mason extends CRFTrainer{
 	private List<CRFEvent> m_testEvents;
 	private String m_tempaltePath;
 	
+	private Map<Integer, String> m_idTagMap;
+	
 	/**
 	 * Instantiates a new cRFLBFGS trainer.
 	 *
@@ -61,6 +66,11 @@ public class CRFLBFGSTrainer4mason extends CRFTrainer{
 		m_tempaltePath = featHandler.getTemplateFilePath();
 		m_devEvents = devEvents;
 		m_testEvents = testEvent;
+		
+		m_idTagMap = new HashMap<Integer, String>();
+		Map<String, Integer> tagIdMap = featHandler.getTagMap();
+		for (Entry<String, Integer> entry : tagIdMap.entrySet())
+			m_idTagMap.put(entry.getValue(), entry.getKey());
 	}
 
 	/* (non-Javadoc)
@@ -109,7 +119,7 @@ public class CRFLBFGSTrainer4mason extends CRFTrainer{
 		 */
 		@Override
 		public double calFunctionVal(double[] x) {
-			System.out.println("Evaluate : dev " + DebugHelper.evaluate(m_devEvents, m_numTag, x) + " test " + DebugHelper.evaluate(m_testEvents, m_numTag, x));
+			System.out.println("F value : dev " + DebugHelper.evaluateSeg(m_devEvents, m_numTag, x, m_idTagMap) + " test " + DebugHelper.evaluateSeg(m_testEvents, m_numTag, x, m_idTagMap));
 			double f  = calcModelExpectation(x);
 			
 			for (double parameter : x)
