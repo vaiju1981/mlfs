@@ -52,7 +52,6 @@ public class MELBFGS extends TrainModel{
 	
 	private class LBFGS extends AbstractLBFGS
 	{
-		private final double constVari = 0-Math.log(Math.sqrt(Math.PI));
 		
 		public LBFGS(int dimetion, int m, int numIter) {
 			super(dimetion, m, numIter);
@@ -70,7 +69,7 @@ public class MELBFGS extends TrainModel{
 			{
 				for (int i=0; i<m_numPredicates; i++)
 					for (int j=0; j<m_numLabels; j++)
-						f -= constVari - x[i*m_numLabels+j];
+						f += x[i*m_numPredicates+j]*x[i*m_numPredicates+j]/2;
 			}
 			
 			return f;
@@ -97,11 +96,18 @@ public class MELBFGS extends TrainModel{
 			}
 			
 			for (int i=0; i<m_numPredicates; i++)
+			{
 				for (int j=0; j<m_numLabels; j++)
+				{
 					if (!USE_GAUSSIAN_SMOOTH)
 						g[i*m_numLabels+j] = m_modelExpection[i][j] - m_observationExpection[i][j];
 					else
-						g[i*m_numLabels+j] = m_modelExpection[i][j] - m_observationExpection[i][j] + 2*x[i*m_numLabels+j];
+						g[i*m_numLabels+j] = m_modelExpection[i][j] - m_observationExpection[i][j] + x[i*m_numLabels+j];
+					
+					if (m_observationExpection[i][j] == TrainModel.SMOOTH_SEEN)
+						g[i*m_numLabels+j] += TrainModel.SMOOTH_SEEN;
+				}
+			}
 						
 		}
 		
@@ -116,8 +122,8 @@ public class MELBFGS extends TrainModel{
 				{
 					if (event.m_values[pid] > 0)
 						candProbs[label] += solutions[predicate*m_numLabels + label] * event.m_values[pid];
-					else
-						candProbs[label] += solutions[predicate*m_numLabels + label]* SMOOTH_SEEN;
+//					else
+//						candProbs[label] += solutions[predicate*m_numLabels + label]* SMOOTH_SEEN;
 				}
 			}
 			

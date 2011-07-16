@@ -24,6 +24,7 @@ package mlfs.textClassification.maxent.main;
 import java.io.IOException;
 
 import mlfs.maxent.GIS;
+import mlfs.maxent.MELBFGS;
 import mlfs.maxent.model.MEModel;
 import mlfs.maxent.model.TrainDataHandler;
 import mlfs.textClassification.corpus.CorpusReader;
@@ -38,18 +39,18 @@ public class Trainer {
 	 */
 	public static void main(String[] args) throws IOException
 	{
-		CorpusReader corpus = new CorpusReader("corpus/textClassification/train.txt", 1, 2);
+		CorpusReader corpus = new CorpusReader("zhidao_train.txt", 0, 0);
 		TrainDataHandler handler = corpus.getTrainDataHadler();
 		//使用高斯平滑会导致参数的求解无法使用解析解更新
 		//只能使用牛顿法更新，进而导致训练速度减慢
 		//一般来说会提高模型效果，但具体能否提高效果也要看实际应用
 		
 		//使用GIS求参
-		GIS gis = new GIS(handler, true);
-		MEModel model = gis.train(100);
+//		GIS gis = new GIS(handler, true);
+//		MEModel model = gis.train(100);
 		
-//		MELBFGS lbfgs = new MELBFGS(handler);
-//		MEModel model = lbfgs.train();
+		MELBFGS lbfgs = new MELBFGS(handler);
+		MEModel model = lbfgs.train();
 		
 		model.save("maxent.model");
 	}

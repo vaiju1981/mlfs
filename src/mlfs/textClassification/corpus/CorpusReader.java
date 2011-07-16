@@ -86,6 +86,15 @@ public class CorpusReader {
 		this.m_predicates = new HashSet<Integer>();
 	}
 	
+	public CorpusReader(String file)
+	{
+		this.m_filePath = file;
+		this.m_cutoffPerDoc = 0;
+		this.m_cutoffDocs = 0;
+		
+		this.m_predicates = new HashSet<Integer>();
+	}
+	
 
 	/**
 	 * 在训练语料中进行统计.
