@@ -29,7 +29,7 @@ import mlfs.maxent.model.TrainDataHandler;
 /**
  * The Class GIS.训练GISModel
  */
-public class GIS extends TrainModel{
+public class GIS extends METrainModel{
 	
 	private Logger logger = Logger.getLogger(GIS.class.getName());
 	
@@ -87,7 +87,12 @@ public class GIS extends TrainModel{
 		logger.info("calc observation expection matrix");
 		m_observationExpection = new double[m_numPredicates][m_numLabels];
 		calcObservationExpection();
-		
+		//simple smooth
+		for (int i=0; i<m_numPredicates; i++)
+			for (int j=0; j<m_numLabels; j++)
+				if (m_observationExpection[i][j] == 0)
+					m_observationExpection[i][j] = METrainModel.SMOOTH_SEEN;
+					
 		logger.info("Start to iterate " + numIter + " times");
 		iterate(numIter);
 		
@@ -149,10 +154,10 @@ public class GIS extends TrainModel{
 					int predicate = event.m_predicates[pid];
 					for (int label=0; label<m_numLabels; label++)
 					{
-						m_modelExpection[predicate][label] += event.getSeenTimes()*candProbs[label]*event.m_values[pid];
+						m_modelExpection[predicate][label] += candProbs[label]*event.m_values[pid];
 					}
 				}
-				curloglikelihood += event.getSeenTimes()*Math.log(candProbs[event.m_label]);
+				curloglikelihood += Math.log(candProbs[event.m_label]);
 			}
 			
 			updateParameters();
@@ -224,7 +229,6 @@ public class GIS extends TrainModel{
 						if (i>0 && Math.abs(delta - tmp) < CONVERGENCE)
 							break;
 					}
-//					System.out.println("delta = "  + delta);
 					m_parameters[predicate][label] += delta;
 				}
 					

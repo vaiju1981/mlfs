@@ -7,7 +7,7 @@ import mlfs.maxent.model.Event;
 import mlfs.maxent.model.MEModel;
 import mlfs.maxent.model.TrainDataHandler;
 
-public abstract class TrainModel {
+public abstract class METrainModel {
 
 	/** 对于未见过的特征的平滑. */
 	protected static double SMOOTH_SEEN = 0.1;
@@ -41,7 +41,7 @@ public abstract class TrainModel {
 	/** label集合. */
 	protected HashSet<Integer> m_labels;
 	
-	public TrainModel(TrainDataHandler handler)
+	public METrainModel(TrainDataHandler handler)
 	{
 		this.m_trainData = handler;
 		
@@ -64,7 +64,7 @@ public abstract class TrainModel {
 	 * @param handler the handler
 	 * @param useGaussianSmooth  是否使用高斯平滑
 	 */
-	public TrainModel(TrainDataHandler handler, boolean useGaussianSmooth)
+	public METrainModel(TrainDataHandler handler, boolean useGaussianSmooth)
 	{
 		this.m_trainData = handler;
 		
@@ -84,25 +84,12 @@ public abstract class TrainModel {
 	 */
 	protected void calcObservationExpection()
 	{
-		int[][] predLabels = new int[m_numPredicates][m_numLabels];
-		
 		for (Event event : m_events)
 		{
 			for (int pid=0; pid<event.m_predicates.length; pid++)
 			{
 				int predicate = event.m_predicates[pid];
-				predLabels[predicate][event.m_label] += event.getSeenTimes() * event.m_values[pid];
-			}
-		}
-		
-		for (int i=0; i<m_numPredicates; i++)
-		{
-			for (int j=0; j<m_numLabels; j++)
-			{
-				if (predLabels[i][j] > 0)
-					m_observationExpection[i][j] = predLabels[i][j];
-				else
-					m_observationExpection[i][j] = SMOOTH_SEEN;
+				m_observationExpection[predicate][event.m_label] += event.m_values[pid];
 			}
 		}
 	}

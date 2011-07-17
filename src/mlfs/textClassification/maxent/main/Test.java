@@ -44,7 +44,7 @@ public class Test {
 		MEModel newModel = MEModel.load("maxent.model");
 		
 		int t=0, f=0;
-		TestCorpusReader test = new TestCorpusReader("corpus/textClassification/newtest.txt", newModel.getPreds());
+		TestCorpusReader test = new TestCorpusReader("zhidao_test.txt", newModel.getPreds());
 		Event e = null;
 		while ((e = test.getEvent()) != null)
 		{

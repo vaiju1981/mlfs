@@ -54,9 +54,14 @@ public class Event {
 		this.m_values = values;
 	}
 	
-	public int getSeenTimes()
-	{
-		return 1;
-	}
+//	public int getSeenTimes()
+//	{
+//		return 1;
+//	}
+//	
+//	public int getXYSeenTimes()
+//	{
+//		return 1;
+//	}
 	
 }

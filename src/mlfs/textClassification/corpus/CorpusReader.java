@@ -33,7 +33,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.logging.Logger;
 
-import mlfs.maxent.model.ComparableEvent;
 import mlfs.maxent.model.Event;
 import mlfs.maxent.model.TrainDataHandler;
 
@@ -111,8 +110,8 @@ public class CorpusReader {
 		logger.info("Analysising train data...");
 		//第一遍，统计谓词出现在多少篇文档中
 		//约束条件：
-		//1、一篇文章里出现次数要大于阈值1
-		//2、出现在的文章数大于阈值2
+		//1、一篇文章里出现次数要大于阈值
+		//2、出现在的文章数大于阈值
 		BufferedReader reader = new BufferedReader(new FileReader(new File(m_filePath)));
 		String line = null;
 		HashMap<Integer, Integer> wordsNum = new HashMap<Integer, Integer>();
@@ -129,13 +128,13 @@ public class CorpusReader {
 				if (wordsNum.containsKey(word))
 					wordsNum.put(word, wordsNum.get(word)+1);
 				else
-					wordsNum.put(word, 1);
+					wordsNum.put(word, Integer.parseInt(wordcount[1]));
 			}
 		}
 		reader.close();
 		//第二遍 按照约束条件过滤
 		reader = new BufferedReader(new FileReader(new File(m_filePath)));
-		ArrayList<ComparableEvent> events = new ArrayList<ComparableEvent>();
+		ArrayList<Event> events = new ArrayList<Event>();
 		while ((line = reader.readLine()) != null)
 		{
 			String[] words = line.trim().split("\\s+");
@@ -170,25 +169,10 @@ public class CorpusReader {
 				m_passedPreds.add(predicates.get(i));
 			}
 			m_passedLabels.add(label);
-			events.add(new ComparableEvent(label, intPreds, intVals));
+			events.add(new Event(label, intPreds, intVals));
 		}
 		reader.close();
-		Collections.sort(events);
-		ArrayList<Event> ret = new ArrayList<Event>(events.size());
-		ComparableEvent addEvent = null;
-		for (int i=0; i<events.size(); i++)
-		{
-			ComparableEvent event = events.get(i);
-			if (event.equals(addEvent))
-				addEvent.addSeen();
-			else
-			{
-				ret.add(event);
-				addEvent = event;
-			}
-		}
-		
-		return ret;
+		return events;
 	}
 	
 	/**

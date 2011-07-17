@@ -49,9 +49,10 @@ public class Trainer {
 //		GIS gis = new GIS(handler, true);
 //		MEModel model = gis.train(100);
 		
-		MELBFGS lbfgs = new MELBFGS(handler);
-		MEModel model = lbfgs.train();
+		MELBFGS lbfgs = new MELBFGS(handler, false);
+		MEModel model = lbfgs.train(30);
 		
 		model.save("maxent.model");
+		System.out.println("Done");
 	}
 }
