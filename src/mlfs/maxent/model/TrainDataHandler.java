@@ -33,12 +33,12 @@ public class TrainDataHandler {
 	private HashSet<Integer> m_predicates;
 	private HashSet<Integer> m_labels;
 	
-	private List<Event> m_events;
+	private List<MEEvent> m_events;
 	
 	private int m_numPred;
 	private int m_numLabels; 
 	
-	public TrainDataHandler(HashSet<Integer> predicates, HashSet<Integer> labels, List<Event> events, int numPreds, int numLabels)
+	public TrainDataHandler(HashSet<Integer> predicates, HashSet<Integer> labels, List<MEEvent> events, int numPreds, int numLabels)
 	{
 		this.m_predicates = predicates;
 		this.m_labels = labels;
@@ -48,7 +48,7 @@ public class TrainDataHandler {
 		this.m_numLabels = numLabels;
 	}
 	
-	public List<Event> getEvents()
+	public List<MEEvent> getEvents()
 	{
 		return this.m_events;
 	}

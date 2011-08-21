@@ -76,7 +76,7 @@ public class MEModel implements Serializable{
 	 * @param event the event
 	 * @return the int
 	 */
-	public int label(Event event)
+	public int label(MEEvent event)
 	{
 		double[] candProbs = new double[m_numLabels];
 		

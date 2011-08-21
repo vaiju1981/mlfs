@@ -22,7 +22,7 @@
 package mlfs.maxent;
 
 import java.util.logging.Logger;
-import mlfs.maxent.model.Event;
+import mlfs.maxent.model.MEEvent;
 import mlfs.maxent.model.MEModel;
 import mlfs.maxent.model.TrainDataHandler;
 
@@ -107,7 +107,7 @@ public class GIS extends METrainModel{
 	private int calcContantC()
 	{
 		int c = -1;
-		for (Event event : m_events)
+		for (MEEvent event : m_events)
 		{
 			if (event.m_values == null)
 			{
@@ -118,7 +118,7 @@ public class GIS extends METrainModel{
 			else 
 			{
 				int satisfiedFeat = 0;
-				for (int v : event.m_values)
+				for (double v : event.m_values)
 					satisfiedFeat += v;
 				if (satisfiedFeat > c)
 					c = satisfiedFeat;
@@ -146,7 +146,7 @@ public class GIS extends METrainModel{
 			preloglikelihood = curloglikelihood;
 			curloglikelihood = 0.0;
 			clearModelException();
-			for (Event event : m_events)
+			for (MEEvent event : m_events)
 			{
 				double[] candProbs = calcCandProbs(event);
 				for (int pid = 0; pid<event.m_predicates.length; pid++)
@@ -173,7 +173,7 @@ public class GIS extends METrainModel{
 	 * @param event 给定的event 
 	 * @return the double[]条件概率
 	 */
-	private double[] calcCandProbs(Event event)
+	private double[] calcCandProbs(MEEvent event)
 	{
 		double[] candProbs = new double[m_numLabels];
 		

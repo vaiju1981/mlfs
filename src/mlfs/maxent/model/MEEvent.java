@@ -31,23 +31,23 @@ package mlfs.maxent.model;
  * 注意：这个类只允许单类情况，即一个event只能属于一个类别，
  * 多类情况，请使用mlfs.maxent.model.ComparableEvent
  */
-public class Event {
+public class MEEvent {
 	
 	/** 输出标签，相当于Fi(x,y)中的y. */
 	public int m_label;
 	/** 每一个上下文x包括若干谓词. */
 	public int[] m_predicates;
 	/** 对应于每个(谓词i,label)出现多少次. */
-	public int[] m_values;
+	public double[] m_values;
 	            
-	public Event(int label, int[] predicates)
+	public MEEvent(int label, int[] predicates)
 	{
 		this.m_label = label;
 		this.m_predicates = predicates;
 		this.m_values = null;
 	}
 	 
-	public Event(int label, int[] predicates, int[] values)
+	public MEEvent(int label, int[] predicates, double[] values)
 	{
 		this.m_label = label;
 		this.m_predicates = predicates;

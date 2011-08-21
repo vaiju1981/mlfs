@@ -3,7 +3,7 @@ package mlfs.maxent;
 import java.util.HashSet;
 import java.util.List;
 
-import mlfs.maxent.model.Event;
+import mlfs.maxent.model.MEEvent;
 import mlfs.maxent.model.MEModel;
 import mlfs.maxent.model.TrainDataHandler;
 
@@ -24,7 +24,7 @@ public abstract class METrainModel {
 	protected int m_numPredicates;
 
 	/** train data中的event列表. */
-	protected List<Event> m_events;
+	protected List<MEEvent> m_events;
 
 	/** 观测期望，训练语料的最大似然估计期望. */
 	protected double[][] m_observationExpection;
@@ -84,7 +84,7 @@ public abstract class METrainModel {
 	 */
 	protected void calcObservationExpection()
 	{
-		for (Event event : m_events)
+		for (MEEvent event : m_events)
 		{
 			for (int pid=0; pid<event.m_predicates.length; pid++)
 			{

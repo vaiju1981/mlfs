@@ -25,7 +25,7 @@ import java.util.logging.Logger;
 
 import riso.numerical.LBFGS;
 
-import mlfs.maxent.model.Event;
+import mlfs.maxent.model.MEEvent;
 import mlfs.maxent.model.MEModel;
 import mlfs.maxent.model.TrainDataHandler;
 
@@ -127,7 +127,7 @@ public class MELBFGS extends METrainModel{
 		}
 		
 		//calc
-		for (Event event : m_events)
+		for (MEEvent event : m_events)
 		{
 			double[] candProbs = calcCandProbs(event, x);
 			if (candProbs[event.m_label] == 0)
@@ -153,7 +153,7 @@ public class MELBFGS extends METrainModel{
 		return f;
 	}
 	
-	private double[] calcCandProbs(Event event, double[] solutions)
+	private double[] calcCandProbs(MEEvent event, double[] solutions)
 	{
 		double[] candProbs = new double[m_numLabels];
 		

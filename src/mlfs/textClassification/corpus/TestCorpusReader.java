@@ -29,7 +29,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Set;
 
-import mlfs.maxent.model.Event;
+import mlfs.maxent.model.MEEvent;
 
 /**
  * The Class TestCorpusReader.
@@ -66,7 +66,7 @@ public class TestCorpusReader {
 	 * @return the event
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public Event getEvent() throws IOException
+	public MEEvent getEvent() throws IOException
 	{
 		String line = m_reader.readLine();
 		if (line == null)
@@ -75,12 +75,12 @@ public class TestCorpusReader {
 		String[] splits = line.split("\\s+");
 		int label = Integer.parseInt(splits[0]);
 		ArrayList<Integer> preds = new ArrayList<Integer>();
-		ArrayList<Integer> counts= new ArrayList<Integer>();
+		ArrayList<Double> counts= new ArrayList<Double>();
 		for (int i=1; i<splits.length; i++)
 		{
 			String[] wordcount = splits[i].split(":");
 			int word = Integer.parseInt(wordcount[0]);
-			int count= Integer.parseInt(wordcount[1]);
+			double count= Double.parseDouble(wordcount[1]);
 			
 			if (!m_dict.contains(word))
 				continue;
@@ -90,14 +90,14 @@ public class TestCorpusReader {
 		}
 		
 		int[] predcates = new int[preds.size()];
-		int[] values = new int[counts.size()];
+		double[] values = new double[counts.size()];
 		for (int i=0; i<preds.size(); i++)
 		{
 			predcates[i] = preds.get(i);
 			values[i] = counts.get(i);
 		}
 		
-		return new Event(label, predcates, values);
+		return new MEEvent(label, predcates, values);
 	}
 	
 	/**

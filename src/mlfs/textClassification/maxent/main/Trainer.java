@@ -41,16 +41,16 @@ public class Trainer {
 	{
 		CorpusReader corpus = new CorpusReader("zhidao_train.txt", 0, 0);
 		TrainDataHandler handler = corpus.getTrainDataHadler();
+				
+		//使用GIS求参，情况下
 		//使用高斯平滑会导致参数的求解无法使用解析解更新
 		//只能使用牛顿法更新，进而导致训练速度减慢
 		//一般来说会提高模型效果，但具体能否提高效果也要看实际应用
-		
-		//使用GIS求参
 //		GIS gis = new GIS(handler, true);
 //		MEModel model = gis.train(100);
 		
-		MELBFGS lbfgs = new MELBFGS(handler, false);
-		MEModel model = lbfgs.train(30);
+		MELBFGS lbfgs = new MELBFGS(handler, true);
+		MEModel model = lbfgs.train(50);
 		
 		model.save("maxent.model");
 		System.out.println("Done");

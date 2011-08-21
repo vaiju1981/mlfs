@@ -23,7 +23,7 @@ package mlfs.textClassification.maxent.main;
 
 import java.io.IOException;
 
-import mlfs.maxent.model.Event;
+import mlfs.maxent.model.MEEvent;
 import mlfs.maxent.model.MEModel;
 import mlfs.textClassification.corpus.TestCorpusReader;
 
@@ -45,7 +45,7 @@ public class Test {
 		
 		int t=0, f=0;
 		TestCorpusReader test = new TestCorpusReader("zhidao_test.txt", newModel.getPreds());
-		Event e = null;
+		MEEvent e = null;
 		while ((e = test.getEvent()) != null)
 		{
 			int label = newModel.label(e);

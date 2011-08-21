@@ -33,7 +33,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.logging.Logger;
 
-import mlfs.maxent.model.Event;
+import mlfs.maxent.model.MEEvent;
 import mlfs.maxent.model.TrainDataHandler;
 
 /**
@@ -105,7 +105,7 @@ public class CorpusReader {
 	 * @return the array list
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	private ArrayList<Event> statistics() throws IOException
+	private ArrayList<MEEvent> statistics() throws IOException
 	{
 		logger.info("Analysising train data...");
 		//第一遍，统计谓词出现在多少篇文档中
@@ -134,7 +134,7 @@ public class CorpusReader {
 		reader.close();
 		//第二遍 按照约束条件过滤
 		reader = new BufferedReader(new FileReader(new File(m_filePath)));
-		ArrayList<Event> events = new ArrayList<Event>();
+		ArrayList<MEEvent> events = new ArrayList<MEEvent>();
 		while ((line = reader.readLine()) != null)
 		{
 			String[] words = line.trim().split("\\s+");
@@ -142,12 +142,12 @@ public class CorpusReader {
 			int label = Integer.parseInt(words[0]);
 			
 			ArrayList<Integer> predicates = new ArrayList<Integer>();
-			ArrayList<Integer> values = new ArrayList<Integer>();
+			ArrayList<Double> values = new ArrayList<Double>();
 			for (int i=1; i<words.length; i++)
 			{
 				String[] wordCount = words[i].split(":");
 				int word = Integer.parseInt(wordCount[0]);
-				int count= Integer.parseInt(wordCount[1]);
+				double count= Double.parseDouble(wordCount[1]);
 				
 				if (count>=m_cutoffPerDoc && wordsNum.get(word)>=m_cutoffDocs)
 				{
@@ -160,7 +160,7 @@ public class CorpusReader {
 				continue;
 			
 			int[] intPreds = new int[predicates.size()];
-			int[] intVals = new int[values.size()];
+			double[] intVals = new double[values.size()];
 			for (int i=0; i<intPreds.length; i++)
 			{
 				intPreds[i] = predicates.get(i);
@@ -169,7 +169,7 @@ public class CorpusReader {
 				m_passedPreds.add(predicates.get(i));
 			}
 			m_passedLabels.add(label);
-			events.add(new Event(label, intPreds, intVals));
+			events.add(new MEEvent(label, intPreds, intVals));
 		}
 		reader.close();
 		return events;
@@ -183,7 +183,7 @@ public class CorpusReader {
 	 */
 	public TrainDataHandler getTrainDataHadler() throws IOException
 	{
-		ArrayList<Event> events = statistics();
+		ArrayList<MEEvent> events = statistics();
 		
 		int numPred = 0;
 		Iterator<Integer> iter = m_predicates.iterator();
