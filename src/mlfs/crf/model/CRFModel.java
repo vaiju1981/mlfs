@@ -264,4 +264,10 @@ public class CRFModel {
 	{
 		return m_numTag;
 	}
+	
+	public Map<Integer, String> getIdTag()
+	{
+		return m_int2tag;
+	}
+	
 }

@@ -1,10 +1,9 @@
-package mlfs.chineseSeg.main;
+package mlfs.crf.main;
 
 
 import java.io.IOException;
 import java.util.List;
 
-import mlfs.chineseSeg.corpus.CorpusProcessing;
 import mlfs.crf.CRFLBFGSTrainer;
 import mlfs.crf.Features;
 import mlfs.crf.TemplateHandler;
@@ -18,15 +17,12 @@ public class Train {
 	{
 		if (args.length != 3)
 		{
-			System.out.println("java -jar crf.jar templatefile trainfile model ");
+			System.out.println("java -jar crfTrainer.jar templatefile trainfile model ");
+			System.exit(-1);
 		}
 		String templateFile = args[0];
 		String trainFile = args[1];
 		String modelFle = args[2];
-//		//从train语料中统计特征，这里注释掉是因为已经统计过了，并生成CHINESE_SEGMENT_CRF.train，没必要反复统计
-//		CorpusProcessing processing = new CorpusProcessing("corpus/chineseSegment/pku_training.utf8");
-//		processing.buildTrainFile();
-//		processing = null;
 		
 		TemplateHandler template = new TemplateHandler(templateFile);
 		

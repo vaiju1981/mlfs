@@ -50,11 +50,11 @@ public class Debug {
 		
 		TemplateHandler template = new TemplateHandler(templatePath);
 		CorpusReader corpus = new CorpusReader(trainPath);
-		List<CRFEvent> events = corpus.getAllEvents();
+		List<CRFEvent> events = corpus.getAllTrainEvents();
 		Features4mason featuresHandle = new Features4mason(template, corpus.getTagMap(), events, crfmodel);
 		Map<String, Integer> featIdMap = featuresHandle.statisticFeat(events, crfmodel);
-		List<CRFEvent> devEvents = corpus.getAllEvents(devPath);
-		List<CRFEvent> testEvents = corpus.getAllEvents(testPath);
+		List<CRFEvent> devEvents = corpus.getTrainEvents(devPath);
+		List<CRFEvent> testEvents = corpus.getTrainEvents(testPath);
 		
 		int numTag = featuresHandle.getTagMap().size();
 		for (CRFEvent e : devEvents)
