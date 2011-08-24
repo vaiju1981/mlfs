@@ -49,6 +49,7 @@ public class Trainer {
 //		GIS gis = new GIS(handler, true);
 //		MEModel model = gis.train(100);
 		
+		//lbfgs收敛速度大大快于GIS方法，建议使用LBFGS求参
 		MELBFGS lbfgs = new MELBFGS(handler, true);
 		MEModel model = lbfgs.train(50);
 		
