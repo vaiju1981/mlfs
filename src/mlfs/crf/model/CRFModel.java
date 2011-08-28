@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.PriorityQueue;
 
 import mlfs.crf.graph.Edge;
 import mlfs.crf.graph.Graph;
@@ -245,6 +246,87 @@ public class CRFModel {
 		return labels;
 	}
 	
+	public List<Path> getNBest(CRFEvent e, int n)
+	{
+		//建立图结构，利用viterbi计算图结构中的值
+		Graph graph = Graph.buildGraph(e, m_numTag, m_parameters);
+		int len = e.labels.length;
+		graph.forwardBackword(len, m_numTag);
+		double[][] delta = new double[m_numTag][len];
+		Node[][] nodes = graph.getNodes();
+		int lastIdx = -1;
+		for (int i=0; i<len; i++)
+		{
+			lastIdx = -1;
+			for (int j=0; j<m_numTag; j++)
+			{
+				double max = Double.NEGATIVE_INFINITY;
+				Node node = nodes[i][j];
+				List<Edge> leftNodes = node.m_ledge;
+				for (Edge edge : leftNodes)
+				{
+					double v = delta[edge.m_lnode.m_y][i-1] + edge.getBigramProb() + node.getUnigramProb();
+					if (v > max)
+					{
+						max = v;
+						lastIdx = edge.m_lnode.m_y;
+					}
+				}
+				delta[j][i] = lastIdx==-1 ? node.getUnigramProb() : max;
+			}
+		}
+
+		//init n-best
+		List<Path> paths = new ArrayList<Path>(n);
+		PriorityQueue<NBestElement> queue = new PriorityQueue<NBestElement>();
+		for (int i=0; i<m_numTag; i++)
+		{
+			NBestElement element = new NBestElement();
+			element.node = nodes[len-1][i];
+			element.next = null;
+			element.gx = nodes[len-1][i].getUnigramProb();
+			element.fx = delta[i][len-1];
+			element.time = len-1;
+			
+			queue.add(element);
+		}
+		//find n-best list
+		for (int i=0; i<n; i++)
+		{
+			if (queue.isEmpty())
+				break;
+			
+			NBestElement element = queue.poll();
+			while (element.time != 0)
+			{
+				List<Edge> ledges = element.node.m_ledge;
+				for (Edge edge : ledges)
+				{
+					NBestElement lelement = new NBestElement();
+					lelement.node = edge.m_lnode;
+					lelement.next = element;
+					lelement.time = element.time-1;
+					lelement.gx = element.gx + edge.getBigramProb() + lelement.node.getUnigramProb();
+					lelement.fx = delta[lelement.node.m_y][lelement.time] - lelement.node.getUnigramProb() + lelement.gx;
+					
+					queue.add(lelement);
+				}
+				element = queue.poll();
+			}
+			//element.time == 0
+			String[] tags = new String[len];
+			double prob = Math.exp(element.gx-graph.getZ());
+			for (int j=0; j<len; j++)
+			{
+				tags[j] = m_int2tag.get(element.node.m_y);
+				element = element.next;
+			}
+			paths.add(new Path(prob, tags));
+			
+		}
+		return paths;
+	}
+		
 	public Map<String, List<String>> getCharFeat()
 	{
 		return CHAR_FEAT;
@@ -270,4 +352,25 @@ public class CRFModel {
 		return m_int2tag;
 	}
 	
+}
+
+class NBestElement implements Comparable<NBestElement>
+{
+	public double fx;
+	public double gx;
+	
+	public int time;
+	
+	public Node node;
+	public NBestElement next;
+
+	@Override
+	public int compareTo(NBestElement o) {
+		if (this.fx > o.fx)
+			return -1;
+		else if (this.fx < o.fx)
+			return 1;
+		else
+			return 0;
+	}
 }
