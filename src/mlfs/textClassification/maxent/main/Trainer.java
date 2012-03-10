@@ -23,7 +23,6 @@ package mlfs.textClassification.maxent.main;
 
 import java.io.IOException;
 
-import mlfs.maxent.GIS;
 import mlfs.maxent.MELBFGS;
 import mlfs.maxent.model.MEModel;
 import mlfs.maxent.model.TrainDataHandler;
@@ -39,7 +38,13 @@ public class Trainer {
 	 */
 	public static void main(String[] args) throws IOException
 	{
-		CorpusReader corpus = new CorpusReader("zhidao_train.txt", 0, 0);
+		if (args.length != 3)
+		{
+			System.out.println("java -jar maxentTrainer trainfile modelfile numIter");
+			System.exit(-1);
+		}
+		
+		CorpusReader corpus = new CorpusReader(args[0]);
 		TrainDataHandler handler = corpus.getTrainDataHadler();
 				
 		//使用GIS求参，情况下
@@ -49,11 +54,12 @@ public class Trainer {
 //		GIS gis = new GIS(handler, true);
 //		MEModel model = gis.train(100);
 		
+
 		//lbfgs收敛速度大大快于GIS方法，建议使用LBFGS求参
 		MELBFGS lbfgs = new MELBFGS(handler, true);
-		MEModel model = lbfgs.train(50);
+		MEModel model = lbfgs.train(Integer.parseInt(args[2]));
 		
-		model.save("maxent.model");
+		model.save(args[1]);
 		System.out.println("Done");
 	}
 }

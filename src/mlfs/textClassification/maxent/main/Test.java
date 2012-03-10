@@ -41,14 +41,21 @@ public class Test {
 	 */
 	public static void main(String[] args) throws IOException, ClassNotFoundException
 	{
-		MEModel newModel = MEModel.load("maxent.model");
+		if (args.length != 2)
+		{
+			System.out.println("java -jar maxentTest.jar modelfile testfile");
+			System.exit(-1);
+		}
+		
+		MEModel newModel = MEModel.load(args[0]);
 		
 		int t=0, f=0;
-		TestCorpusReader test = new TestCorpusReader("zhidao_test.txt", newModel.getPreds());
+		TestCorpusReader test = new TestCorpusReader(args[1], newModel.getPreds());
 		MEEvent e = null;
 		while ((e = test.getEvent()) != null)
 		{
 			int label = newModel.label(e);
+			System.out.println(label);
 			if (label == e.m_label)
 				t++;
 			else
