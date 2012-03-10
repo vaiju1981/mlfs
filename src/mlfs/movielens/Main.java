@@ -16,9 +16,10 @@ public class Main {
 		System.out.println("Loading Training data...");
 		List<SVDInstance> trainData = reader.readTrainData("corpus/ml-100k/all.train");
 		
-		SVDTrainer trainer = new SVDTrainer(trainData, reader.getNumUsers(), reader.getNumItems(), 100);
+		SVDTrainer trainer = new SVDTrainer(trainData, reader.getNumUsers(), reader.getNumItems(), 150);
 		System.out.println("Starting Training...");
-		trainer.train(1000);
+		trainer.setLambda(1.0);
+		trainer.train(100);
 		
 		SVDModel model = new SVDModel(reader.getUserMap(), reader.getItemMap(), trainer.getParameters());
 		
@@ -27,6 +28,7 @@ public class Main {
 		List<SVDInstance> testData = reader.readTestData("corpus/ml-100k/all.test");
 		for (SVDInstance ins : testData) {
 			double r = model.predict(ins);
+			System.out.println(ins.rating + " : " + r);
 			rmse += (ins.rating - r) * (ins.rating - r);
 		}
 		rmse = Math.sqrt(rmse/testData.size());
