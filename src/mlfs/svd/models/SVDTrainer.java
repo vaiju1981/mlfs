@@ -88,13 +88,12 @@ public class SVDTrainer {
 				funVal += deltaArray[i] * deltaArray[i];
 			}
 
-			for (int i = 0; i < numFeatures; i += K) {
-				double sum = 0.0;
-				for (int j = 0; j < K; j++) {
-					sum += x[i + j] * x[i + j];
-				}
-				funVal += 0.5 * lambda * sum;
+			double sum = 0.0;
+			for (int i = 0; i < numFeatures; i++) {
+					sum += x[i] * x[i];
 			}
+			
+			funVal += 0.5 * lambda * sum;
 
 			return funVal;
 		}
