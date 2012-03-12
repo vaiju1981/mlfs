@@ -93,7 +93,7 @@ public class SVDTrainer {
 				for (int j = 0; j < K; j++) {
 					sum += x[i + j] * x[i + j];
 				}
-				funVal += lambda * sum;
+				funVal += 0.5 * lambda * sum;
 			}
 
 			return funVal;

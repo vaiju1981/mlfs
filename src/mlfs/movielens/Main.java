@@ -22,7 +22,9 @@ public class Main {
 		trainer.train(100);
 		
 		SVDModel model = new SVDModel(reader.getUserMap(), reader.getItemMap(), trainer.getParameters());
+		model.save("basic_svd.model");
 		
+		model = new SVDModel("basic_svd.model");
 		double rmse = 0.0;
 		System.out.println("Loading test data...");
 		List<SVDInstance> testData = reader.readTestData("corpus/ml-100k/all.test");
