@@ -42,6 +42,9 @@ public class CRFLBFGSTrainer extends CRFTrainer{
 	
 	protected String m_templateFilePath;
 	
+	protected double lambda;
+	
+	
 	/**
 	 * Instantiates a new cRFLBFGS trainer.
 	 *
@@ -54,6 +57,26 @@ public class CRFLBFGSTrainer extends CRFTrainer{
 		super(events, featHandler);
 		m_templateFilePath = featHandler.getTemplateFilePath();
 		featHandler = null;
+		this.lambda = 1.0;
+	}
+	/**
+	 * Instantiates a new cRFLBFGS trainer.
+	 *
+	 * @param events the events
+	 * @param featHandler the feat handler
+	 * @param lambda the lambda
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public CRFLBFGSTrainer(List<CRFEvent> events, Features featHandler, double lambda)
+			throws IOException {
+		super(events, featHandler);
+		m_templateFilePath = featHandler.getTemplateFilePath();
+		featHandler = null;
+		this.lambda = lambda;
+	}
+	
+	public void setLambda(double lambda) {
+		this.lambda = lambda;
 	}
 
 	/* (non-Javadoc)
@@ -116,7 +139,7 @@ public class CRFLBFGSTrainer extends CRFTrainer{
 			double f  = calcModelExpectation(x);
 			
 			for (double parameter : x)
-				f += parameter*parameter/2.0;//高斯平滑
+				f += parameter*parameter/2.0*lambda;//高斯平滑
 			return f;
 		}
 
@@ -128,7 +151,7 @@ public class CRFLBFGSTrainer extends CRFTrainer{
 		public void calGradientVal(double[] x, double[] g) {
 			for (int i=0; i<m_numFeat; i++)
 				for (int j=0; j<m_numTag; j++)
-					g[i*m_numTag+j] = m_modelExpectation[i][j]+ x[i*m_numTag+j];
+					g[i*m_numTag+j] = m_modelExpectation[i][j]+ x[i*m_numTag+j]*lambda;
 //					g[i*m_numTag+j] = m_modelExpectation[i][j]/m_numEvents + x[i*m_numTag+j];
 		}
 		
